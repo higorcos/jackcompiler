@@ -104,6 +104,34 @@ public class Scanner {
 
   }
 
+  public char peekNext() {
+    int next = current + 1;
+    return next < input.length ? (char) input[next] : '\0';
+  }
+
+  private void skipLineComments() {
+    while (peek() != '\n' && peek() != '\0') {
+      advance();
+    }
+  }
+
+  private void skipBlockComments() {
+    advance();
+    advance();
+    while (true) {
+      if (peek() == '\0') {
+        throw new Error("lexical error: unterminated block comment");
+      }
+      if (peek() == '*' && peekNext() == '/') {
+        advance();
+        advance();
+        return;
+      }
+
+      advance();
+    }
+  }
+
   public Token nextToken() {
     skipWhitespace();
 
@@ -176,6 +204,14 @@ public class Scanner {
         advance();
         return new Token(TokenType.COMMA, ",");
       case '/':
+        if (peekNext() == '/') {
+          skipLineComments();
+          return nextToken();
+        }
+        if (peekNext() == '*') {
+          skipBlockComments();
+          return nextToken();
+        }
         advance();
         return new Token(TokenType.SLASH, "/");
       case '\0':
