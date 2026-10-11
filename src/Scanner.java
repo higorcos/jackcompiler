@@ -87,6 +87,23 @@ public class Scanner {
     return new Token(type, id);
   }
 
+  private Token string() {
+    advance();
+    int start = current;
+    while (peek() != '"' && peek() != '\n' && peek() != '\0') {
+      advance();
+    }
+
+    if (peek() != '"') {
+      throw new Error("lexical error: unterminated string");
+    }
+
+    String s = new String(input, start, current - start);
+    advance();
+    return new Token(TokenType.STRING, s);
+
+  }
+
   public Token nextToken() {
     skipWhitespace();
 
@@ -97,6 +114,10 @@ public class Scanner {
 
     if (Character.isDigit(ch)) {
       return number();
+    }
+
+    if (ch == '"') {
+      return string();
     }
 
     switch (ch) {

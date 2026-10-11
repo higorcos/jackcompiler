@@ -5,7 +5,7 @@ public enum TokenType {
   AND, OR, NOT, LT, GT, EQ,
 
   // literals
-  NUMBER, IDENT,
+  NUMBER, IDENT, STRING,
 
   // keywords
   CLASS, CONSTRUCTOR, FUNCTION, METHOD, FIELD, STATIC, VAR,
