@@ -1,6 +1,36 @@
+import java.util.HashMap;
+import java.util.Map;
+
 public class Scanner {
   private byte[] input;
   private int current;
+
+  private static final Map<String, TokenType> keywords;
+
+  static {
+    keywords = new HashMap<>();
+    keywords.put("class", TokenType.CLASS);
+    keywords.put("constructor", TokenType.CONSTRUCTOR);
+    keywords.put("function", TokenType.FUNCTION);
+    keywords.put("method", TokenType.METHOD);
+    keywords.put("field", TokenType.FIELD);
+    keywords.put("static", TokenType.STATIC);
+    keywords.put("var", TokenType.VAR);
+    keywords.put("int", TokenType.INT);
+    keywords.put("char", TokenType.CHAR);
+    keywords.put("boolean", TokenType.BOOLEAN);
+    keywords.put("void", TokenType.VOID);
+    keywords.put("true", TokenType.TRUE);
+    keywords.put("false", TokenType.FALSE);
+    keywords.put("null", TokenType.NULL);
+    keywords.put("this", TokenType.THIS);
+    keywords.put("let", TokenType.LET);
+    keywords.put("do", TokenType.DO);
+    keywords.put("if", TokenType.IF);
+    keywords.put("else", TokenType.ELSE);
+    keywords.put("while", TokenType.WHILE);
+    keywords.put("return", TokenType.RETURN);
+  }
 
   public Scanner(byte[] input) {
     this.input = input;
@@ -53,7 +83,8 @@ public class Scanner {
     }
 
     String id = new String(input, start, current - start);
-    return new Token(TokenType.IDENT, id);
+    TokenType type = keywords.getOrDefault(id, TokenType.IDENT);
+    return new Token(type, id);
   }
 
   public Token nextToken() {

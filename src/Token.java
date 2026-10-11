@@ -10,5 +10,4 @@ public class Token {
   public String toString() {
     return "<" + type + ">" + lexeme + "</" + type + ">";
   }
-  
 }
