@@ -4,6 +4,7 @@ import java.util.Map;
 public class Scanner {
   private byte[] input;
   private int current;
+  private int line = 1;
 
   private static final Map<String, TokenType> keywords;
 
@@ -46,8 +47,15 @@ public class Scanner {
   private void advance() {
     char ch = peek();
     if (ch != '\0') {
+      if (ch == '\n') {
+        line++;
+      }
       current++;
     }
+  }
+
+  private Token token(TokenType type, String lexeme) {
+    return new Token(type, lexeme, line);
   }
 
   private boolean isAlpha(char ch) {
@@ -73,7 +81,7 @@ public class Scanner {
     }
 
     String n = new String(input, start, current - start);
-    return new Token(TokenType.NUMBER, n);
+    return token(TokenType.NUMBER, n);
   }
 
   private Token identifier() {
@@ -84,7 +92,7 @@ public class Scanner {
 
     String id = new String(input, start, current - start);
     TokenType type = keywords.getOrDefault(id, TokenType.IDENT);
-    return new Token(type, id);
+    return token(type, id);
   }
 
   private Token string() {
@@ -100,7 +108,7 @@ public class Scanner {
 
     String s = new String(input, start, current - start);
     advance();
-    return new Token(TokenType.STRING, s);
+    return token(TokenType.STRING, s);
 
   }
 
@@ -151,58 +159,58 @@ public class Scanner {
     switch (ch) {
       case '+':
         advance();
-        return new Token(TokenType.PLUS, "+");
+        return token(TokenType.PLUS, "+");
       case '-':
         advance();
-        return new Token(TokenType.MINUS, "-");
+        return token(TokenType.MINUS, "-");
       case '*':
         advance();
-        return new Token(TokenType.ASTERISK, "*");
+        return token(TokenType.ASTERISK, "*");
       case '.':
         advance();
-        return new Token(TokenType.DOT, ".");
+        return token(TokenType.DOT, ".");
       case '&':
         advance();
-        return new Token(TokenType.AND, "&");
+        return token(TokenType.AND, "&");
       case '|':
         advance();
-        return new Token(TokenType.OR, "|");
+        return token(TokenType.OR, "|");
       case '~':
         advance();
-        return new Token(TokenType.NOT, "~");
+        return token(TokenType.NOT, "~");
       case '>':
         advance();
-        return new Token(TokenType.GT, ">");
+        return token(TokenType.GT, ">");
       case '<':
         advance();
-        return new Token(TokenType.LT, "<");
+        return token(TokenType.LT, "<");
       case '=':
         advance();
-        return new Token(TokenType.EQ, "=");
+        return token(TokenType.EQ, "=");
       case '(':
         advance();
-        return new Token(TokenType.LPAREN, "(");
+        return token(TokenType.LPAREN, "(");
       case ')':
         advance();
-        return new Token(TokenType.RPAREN, ")");
+        return token(TokenType.RPAREN, ")");
       case '{':
         advance();
-        return new Token(TokenType.LBRACE, "{");
+        return token(TokenType.LBRACE, "{");
       case '}':
         advance();
-        return new Token(TokenType.RBRACE, "}");
+        return token(TokenType.RBRACE, "}");
       case '[':
         advance();
-        return new Token(TokenType.LBRACKET, "[");
+        return token(TokenType.LBRACKET, "[");
       case ']':
         advance();
-        return new Token(TokenType.RBRACKET, "]");
+        return token(TokenType.RBRACKET, "]");
       case ';':
         advance();
-        return new Token(TokenType.SEMICOLON, ";");
+        return token(TokenType.SEMICOLON, ";");
       case ',':
         advance();
-        return new Token(TokenType.COMMA, ",");
+        return token(TokenType.COMMA, ",");
       case '/':
         if (peekNext() == '/') {
           skipLineComments();
@@ -213,9 +221,9 @@ public class Scanner {
           return nextToken();
         }
         advance();
-        return new Token(TokenType.SLASH, "/");
+        return token(TokenType.SLASH, "/");
       case '\0':
-        return new Token(TokenType.EOF, "EOF");
+        return token(TokenType.EOF, "EOF");
       default:
         throw new Error("lexical error at " + ch);
     }
