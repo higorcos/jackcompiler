@@ -140,8 +140,21 @@ public class Scanner {
     }
   }
 
+  private void skipIgnored() {
+    while (true) {
+      skipWhitespace();
+      if (peek() == '/' && peekNext() == '/') {
+        skipLineComments();
+      } else if (peek() == '/' && peekNext() == '*') {
+        skipBlockComments();
+      } else {
+        return;
+      }
+    }
+  }
+
   public Token nextToken() {
-    skipWhitespace();
+    skipIgnored();
 
     char ch = peek();
     if (isAlpha(ch)) {
@@ -212,14 +225,6 @@ public class Scanner {
         advance();
         return token(TokenType.COMMA, ",");
       case '/':
-        if (peekNext() == '/') {
-          skipLineComments();
-          return nextToken();
-        }
-        if (peekNext() == '*') {
-          skipBlockComments();
-          return nextToken();
-        }
         advance();
         return token(TokenType.SLASH, "/");
       case '\0':
