@@ -73,7 +73,7 @@ public class Scanner {
     }
 
     if (peek() != '"') {
-      throw new Error("lexical error: unterminated string");
+      throw new LexicalException("unterminated string", line);
     }
 
     String s = new String(input, start, current - start);
@@ -94,11 +94,12 @@ public class Scanner {
   }
 
   private void skipBlockComments() {
+    int startLine = line;
     advance();
     advance();
     while (true) {
       if (peek() == '\0') {
-        throw new Error("lexical error: unterminated block comment");
+        throw new LexicalException("unterminated block comment", startLine);
       }
       if (peek() == '*' && peekNext() == '/') {
         advance();
@@ -145,7 +146,7 @@ public class Scanner {
 
     TokenType type = Lexicon.symbolType(ch);
     if (type == null) {
-      throw new Error("lexical error at " + ch);
+      throw new LexicalException("unexpected character '" + ch + "'", line);
     }
 
     advance();

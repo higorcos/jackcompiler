@@ -10,8 +10,13 @@ public class Main {
     byte[] input = Files.readAllBytes(Paths.get(args[0]));
     Scanner scan = new Scanner(input);
     System.out.println("<tokens>");
-    for (Token tk = scan.nextToken(); tk.type != TokenType.EOF; tk = scan.nextToken()) {
-      System.out.println(tk);
+    try {
+      for (Token tk = scan.nextToken(); tk.type != TokenType.EOF; tk = scan.nextToken()) {
+        System.out.println(tk);
+      }
+    } catch (LexicalException e) {
+      System.err.println("lexical error at " + e.getMessage());
+      System.exit(1);
     }
     System.out.println("</tokens>");
   }
