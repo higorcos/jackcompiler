@@ -33,6 +33,31 @@ public class Scanner {
     keywords.put("return", TokenType.RETURN);
   }
 
+  private static final Map<Character, TokenType> symbols;
+
+  static {
+    symbols = new HashMap<>();
+    symbols.put('+', TokenType.PLUS);
+    symbols.put('-', TokenType.MINUS);
+    symbols.put('*', TokenType.ASTERISK);
+    symbols.put('/', TokenType.SLASH);
+    symbols.put('.', TokenType.DOT);
+    symbols.put(',', TokenType.COMMA);
+    symbols.put(';', TokenType.SEMICOLON);
+    symbols.put('&', TokenType.AND);
+    symbols.put('|', TokenType.OR);
+    symbols.put('~', TokenType.NOT);
+    symbols.put('<', TokenType.LT);
+    symbols.put('>', TokenType.GT);
+    symbols.put('=', TokenType.EQ);
+    symbols.put('(', TokenType.LPAREN);
+    symbols.put(')', TokenType.RPAREN);
+    symbols.put('{', TokenType.LBRACE);
+    symbols.put('}', TokenType.RBRACE);
+    symbols.put('[', TokenType.LBRACKET);
+    symbols.put(']', TokenType.RBRACKET);
+  }
+
   public Scanner(byte[] input) {
     this.input = input;
   }
@@ -169,68 +194,16 @@ public class Scanner {
       return string();
     }
 
-    switch (ch) {
-      case '+':
-        advance();
-        return token(TokenType.PLUS, "+");
-      case '-':
-        advance();
-        return token(TokenType.MINUS, "-");
-      case '*':
-        advance();
-        return token(TokenType.ASTERISK, "*");
-      case '.':
-        advance();
-        return token(TokenType.DOT, ".");
-      case '&':
-        advance();
-        return token(TokenType.AND, "&");
-      case '|':
-        advance();
-        return token(TokenType.OR, "|");
-      case '~':
-        advance();
-        return token(TokenType.NOT, "~");
-      case '>':
-        advance();
-        return token(TokenType.GT, ">");
-      case '<':
-        advance();
-        return token(TokenType.LT, "<");
-      case '=':
-        advance();
-        return token(TokenType.EQ, "=");
-      case '(':
-        advance();
-        return token(TokenType.LPAREN, "(");
-      case ')':
-        advance();
-        return token(TokenType.RPAREN, ")");
-      case '{':
-        advance();
-        return token(TokenType.LBRACE, "{");
-      case '}':
-        advance();
-        return token(TokenType.RBRACE, "}");
-      case '[':
-        advance();
-        return token(TokenType.LBRACKET, "[");
-      case ']':
-        advance();
-        return token(TokenType.RBRACKET, "]");
-      case ';':
-        advance();
-        return token(TokenType.SEMICOLON, ";");
-      case ',':
-        advance();
-        return token(TokenType.COMMA, ",");
-      case '/':
-        advance();
-        return token(TokenType.SLASH, "/");
-      case '\0':
-        return token(TokenType.EOF, "EOF");
-      default:
-        throw new Error("lexical error at " + ch);
+    if (ch == '\0') {
+      return token(TokenType.EOF, "EOF");
     }
+
+    TokenType type = symbols.get(ch);
+    if (type == null) {
+      throw new Error("lexical error at " + ch);
+    }
+
+    advance();
+    return token(type, String.valueOf(ch));
   }
 }
