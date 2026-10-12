@@ -1,5 +1,5 @@
 public class Scanner {
-  private byte[] input;
+  private final byte[] input;
   private int current;
   private int line = 1;
 
@@ -79,10 +79,9 @@ public class Scanner {
     String s = new String(input, start, current - start);
     advance();
     return token(TokenType.STRING, s);
-
   }
 
-  public char peekNext() {
+  private char peekNext() {
     int next = current + 1;
     return next < input.length ? (char) input[next] : '\0';
   }
