@@ -1,3 +1,5 @@
+package lexer;
+
 public class LexicalException extends RuntimeException {
   private final int line;
 

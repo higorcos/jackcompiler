@@ -1,7 +1,9 @@
+package lexer;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class Lexicon {
+class Lexicon {
   private static final Map<String, TokenType> keywords = new HashMap<>();
   private static final Map<Character, TokenType> symbols = new HashMap<>();
 

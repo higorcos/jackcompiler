@@ -2,7 +2,7 @@
 # Compila o scanner e compara a saida com os T.xml oficiais.
 set -e
 
-javac -d bin src/*.java
+javac -sourcepath src -d bin src/Main.java
 
 fail=0
 for name in Main Square SquareGame; do

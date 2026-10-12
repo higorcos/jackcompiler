@@ -1,5 +1,9 @@
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import lexer.LexicalException;
+import lexer.Scanner;
+import lexer.Token;
+import lexer.TokenType;
 
 public class Main {
   public static void main(String[] args) throws Exception {

@@ -1,3 +1,5 @@
+package lexer;
+
 public class Scanner {
   private final byte[] input;
   private int current;

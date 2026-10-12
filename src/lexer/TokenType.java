@@ -1,3 +1,5 @@
+package lexer;
+
 public enum TokenType {
   // symbols
   LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET,

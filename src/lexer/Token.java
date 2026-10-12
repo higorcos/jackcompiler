@@ -1,7 +1,9 @@
+package lexer;
+
 public class Token {
-  final TokenType type;
-  final String lexeme;
-  final int line;
+  public final TokenType type;
+  public String lexeme;
+  public final int line;
 
   public Token(TokenType type, String lexeme, int line) {
     this.type = type;
@@ -25,9 +27,9 @@ public class Token {
 
   private String escape(String s) {
     return s.replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-            .replace("\"", "&quot;");
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace("\"", "&quot;");
   }
 
   public String toString() {
