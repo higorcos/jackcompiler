@@ -73,6 +73,23 @@ public class Parser {
     printNonTerminal("/term");
   }
 
+  private static boolean isOperator(TokenType type) {
+    return switch (type) {
+      case PLUS, MINUS, ASTERISK, SLASH, AND, OR, LT, GT, EQ -> true;
+      default -> false;
+    };
+  }
+
+  void parseExpression() {
+    printNonTerminal("expression");
+    parseTerm();
+    while (isOperator(peekToken.type)) {
+      expectPeek(peekToken.type);
+      parseTerm();
+    }
+    printNonTerminal("/expression");
+  }
+
   private SyntaxException error(Token token, String message) {
     return new SyntaxException(message + ", found '" + token.lexeme + "'", token.line);
   }

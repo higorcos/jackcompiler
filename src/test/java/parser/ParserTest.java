@@ -72,4 +72,48 @@ class ParserTest {
     SyntaxException e = assertThrows(SyntaxException.class, p::parseTerm);
     assertEquals("line 1: expected term, found ';'", e.getMessage());
   }
+
+  @Test
+  void expressionWithOperator() {
+    Parser p = parser("10+20;");
+    p.parseExpression();
+    assertEquals(xml(
+        "<expression>",
+        "  <term>",
+        "    <integerConstant> 10 </integerConstant>",
+        "  </term>",
+        "  <symbol> + </symbol>",
+        "  <term>",
+        "    <integerConstant> 20 </integerConstant>",
+        "  </term>",
+        "</expression>"), p.xmlOutput());
+  }
+
+  @Test
+  void expressionEscapesLessThan() {
+    Parser p = parser("a<b;");
+    p.parseExpression();
+    assertEquals(xml(
+        "<expression>",
+        "  <term>",
+        "    <identifier> a </identifier>",
+        "  </term>",
+        "  <symbol> &lt; </symbol>",
+        "  <term>",
+        "    <identifier> b </identifier>",
+        "  </term>",
+        "</expression>"), p.xmlOutput());
+  }
+
+  @Test
+  void expressionStringIsNotOperator() {
+    Parser p = parser("x \"+\";");
+    p.parseExpression();
+    assertEquals(xml(
+        "<expression>",
+        "  <term>",
+        "    <identifier> x </identifier>",
+        "  </term>",
+        "</expression>"), p.xmlOutput());
+  }
 }
