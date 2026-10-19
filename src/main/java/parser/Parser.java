@@ -167,9 +167,29 @@ public class Parser {
     printNonTerminal("/returnStatement");
   }
 
+  void parseIf() {
+    printNonTerminal("ifStatement");
+    expectPeek(TokenType.IF);
+    expectPeek(TokenType.LPAREN);
+    parseExpression();
+    expectPeek(TokenType.RPAREN);
+    expectPeek(TokenType.LBRACE);
+    parseStatements();
+    expectPeek(TokenType.RBRACE);
+
+    if (peekTokenIs(TokenType.ELSE)) {
+      expectPeek(TokenType.ELSE);
+      expectPeek(TokenType.LBRACE);
+      parseStatements();
+      expectPeek(TokenType.RBRACE);
+    }
+
+    printNonTerminal("/ifStatement");
+  }
+
   private static boolean isStatement(TokenType type) {
     return switch (type) {
-      case LET, DO, RETURN -> true;
+      case LET, DO, RETURN, IF -> true;
       default -> false;
     };
   }
@@ -187,6 +207,7 @@ public class Parser {
       case LET -> parseLet();
       case DO -> parseDo();
       case RETURN -> parseReturn();
+      case IF -> parseIf();
       default -> throw error(peekToken, "expected statement");
     }
   }

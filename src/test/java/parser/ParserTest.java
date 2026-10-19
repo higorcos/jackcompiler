@@ -400,4 +400,61 @@ class ParserTest {
         "  </returnStatement>",
         "</statements>"), p.xmlOutput());
   }
+
+  @Test
+  void ifWithoutElse() {
+    Parser p = parser("if (x) { return; }");
+    p.parseIf();
+    assertEquals(xml(
+        "<ifStatement>",
+        "  <keyword> if </keyword>",
+        "  <symbol> ( </symbol>",
+        "  <expression>",
+        "    <term>",
+        "      <identifier> x </identifier>",
+        "    </term>",
+        "  </expression>",
+        "  <symbol> ) </symbol>",
+        "  <symbol> { </symbol>",
+        "  <statements>",
+        "    <returnStatement>",
+        "      <keyword> return </keyword>",
+        "      <symbol> ; </symbol>",
+        "    </returnStatement>",
+        "  </statements>",
+        "  <symbol> } </symbol>",
+        "</ifStatement>"), p.xmlOutput());
+  }
+
+  @Test
+  void statementsIfWithElse() {
+    Parser p = parser("if (false) { } else { return; } }");
+    p.parseStatements();
+    assertEquals(xml(
+        "<statements>",
+        "  <ifStatement>",
+        "    <keyword> if </keyword>",
+        "    <symbol> ( </symbol>",
+        "    <expression>",
+        "      <term>",
+        "        <keyword> false </keyword>",
+        "      </term>",
+        "    </expression>",
+        "    <symbol> ) </symbol>",
+        "    <symbol> { </symbol>",
+        "    <statements>",
+        "    </statements>",
+        "    <symbol> } </symbol>",
+        "    <keyword> else </keyword>",
+        "    <symbol> { </symbol>",
+        "    <statements>",
+        "      <returnStatement>",
+        "        <keyword> return </keyword>",
+        "        <symbol> ; </symbol>",
+        "      </returnStatement>",
+        "    </statements>",
+        "    <symbol> } </symbol>",
+        "  </ifStatement>",
+        "</statements>"), p.xmlOutput());
+  }
 }
