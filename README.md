@@ -11,24 +11,24 @@ Compilador para a linguagem Jack, baseado no projeto [Nand2Tetris](https://www.n
 
 O projeto é escrito em Java 17 ou superior, sem bibliotecas externas e sem ferramenta de build. Só o `javac` e o `java` precisam estar instalados.
 
-O código-fonte fica em `src/`, os programas Jack e os XML de referência em `tests/` e o script de validação em `scripts/`.
+O código-fonte fica em `src/main/java/`, os programas Jack e os XML de referência em `src/test/resources/` e o script de validação em `scripts/`.
 
 ## Analisador léxico
 
 O scanner lê um arquivo `.jack` e imprime os tokens em XML, no formato dos arquivos de referência do Nand2Tetris. Ele reconhece palavras reservadas, símbolos, constantes inteiras, constantes de string e identificadores, e pula espaços e comentários. Diante de um caractere inválido, de uma string sem aspas finais ou de um comentário de bloco sem fechamento, o scanner lança uma `LexicalException` com a linha do problema, e o programa termina com uma mensagem como `lexical error at line 2: unexpected character '@'`.
 
-O código fica no pacote `lexer`, em `src/lexer/`. O `Scanner.java` reconhece os tokens. O `Token.java` guarda o tipo, o lexema e a linha de cada token e gera o seu XML. O `TokenType.java` lista os tipos de token. O `Lexicon.java` guarda as tabelas de palavras reservadas e de símbolos, e o `LexicalException.java` define a exceção dos erros léxicos. O ponto de entrada é o `src/Main.java`.
+O código fica no pacote `lexer`, em `src/main/java/lexer/`. O `Scanner.java` reconhece os tokens. O `Token.java` guarda o tipo, o lexema e a linha de cada token e gera o seu XML. O `TokenType.java` lista os tipos de token. O `Lexicon.java` guarda as tabelas de palavras reservadas e de símbolos, e o `LexicalException.java` define a exceção dos erros léxicos. O ponto de entrada é o `src/main/java/Main.java`.
 
 Para compilar:
 
 ```bash
-javac -sourcepath src -d bin src/Main.java
+javac -sourcepath src/main/java -d bin src/main/java/Main.java
 ```
 
 Os `.class` vão para `bin/`. O `-sourcepath` faz o `javac` encontrar sozinho as classes do pacote `lexer`. Para rodar o scanner, o arquivo Jack é passado como argumento:
 
 ```bash
-java -cp bin Main tests/Square.jack
+java -cp bin Main src/test/resources/Square.jack
 ```
 
 A saída começa assim:
