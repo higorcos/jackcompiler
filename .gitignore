@@ -2,10 +2,11 @@ bin/
 out/
 *.class
 
-.vscode/*
-!.vscode/settings.json
+.vscode/
 .classpath
 .project
 .settings
+
+target/
 
 .DS_Store

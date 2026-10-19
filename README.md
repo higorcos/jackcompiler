@@ -9,7 +9,7 @@ Compilador para a linguagem Jack, baseado no projeto [Nand2Tetris](https://www.n
 
 ## Linguagem
 
-O projeto é escrito em Java 17 ou superior, sem bibliotecas externas e sem ferramenta de build. Só o `javac` e o `java` precisam estar instalados.
+O projeto é escrito em Java 17 ou superior e usa o Maven para compilar e rodar os testes automatizados, escritos com JUnit 5. O repositório traz o Maven Wrapper, o script `mvnw`, então basta ter o Java instalado: na primeira execução, o wrapper baixa o Maven sozinho.
 
 O código-fonte fica em `src/main/java/`, os programas Jack e os XML de referência em `src/test/resources/` e o script de validação em `scripts/`.
 
