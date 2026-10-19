@@ -187,9 +187,21 @@ public class Parser {
     printNonTerminal("/ifStatement");
   }
 
+  void parseWhile() {
+    printNonTerminal("whileStatement");
+    expectPeek(TokenType.WHILE);
+    expectPeek(TokenType.LPAREN);
+    parseExpression();
+    expectPeek(TokenType.RPAREN);
+    expectPeek(TokenType.LBRACE);
+    parseStatements();
+    expectPeek(TokenType.RBRACE);
+    printNonTerminal("/whileStatement");
+  }
+
   private static boolean isStatement(TokenType type) {
     return switch (type) {
-      case LET, DO, RETURN, IF -> true;
+      case LET, DO, RETURN, IF, WHILE -> true;
       default -> false;
     };
   }
@@ -208,6 +220,7 @@ public class Parser {
       case DO -> parseDo();
       case RETURN -> parseReturn();
       case IF -> parseIf();
+      case WHILE -> parseWhile();
       default -> throw error(peekToken, "expected statement");
     }
   }
