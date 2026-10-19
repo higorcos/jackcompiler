@@ -15,7 +15,6 @@ public class Parser {
   public Parser(byte[] input) {
     scan = new Scanner(input);
     nextToken();
-    nextToken();
   }
 
   private void nextToken() {
@@ -59,6 +58,19 @@ public class Parser {
     if (!closing) {
       level++;
     }
+  }
+
+  void parseTerm() {
+    printNonTerminal("term");
+    switch (peekToken.type) {
+      case NUMBER -> expectPeek(TokenType.NUMBER);
+      case STRING -> expectPeek(TokenType.STRING);
+      case FALSE, NULL, TRUE -> expectPeek(TokenType.FALSE, TokenType.NULL, TokenType.TRUE);
+      case THIS -> expectPeek(TokenType.THIS);
+      case IDENT -> expectPeek(TokenType.IDENT);
+      default -> throw error(peekToken, "expected term");
+    }
+    printNonTerminal("/term");
   }
 
   private SyntaxException error(Token token, String message) {
