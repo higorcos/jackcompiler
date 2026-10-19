@@ -67,7 +67,25 @@ public class Parser {
       case STRING -> expectPeek(TokenType.STRING);
       case FALSE, NULL, TRUE -> expectPeek(TokenType.FALSE, TokenType.NULL, TokenType.TRUE);
       case THIS -> expectPeek(TokenType.THIS);
-      case IDENT -> expectPeek(TokenType.IDENT);
+      case IDENT -> {
+        expectPeek(TokenType.IDENT);
+        if (peekTokenIs(TokenType.LBRACKET)) {
+          expectPeek(TokenType.LBRACKET);
+          parseExpression();
+          expectPeek(TokenType.RBRACKET);
+        } else if (peekTokenIs(TokenType.LPAREN) || peekTokenIs(TokenType.DOT)) {
+          parseSubroutineCall();
+        }
+      }
+      case LPAREN -> {
+        expectPeek(TokenType.LPAREN);
+        parseExpression();
+        expectPeek(TokenType.RPAREN);
+      }
+      case MINUS, NOT -> {
+        expectPeek(TokenType.MINUS, TokenType.NOT);
+        parseTerm();
+      }
       default -> throw error(peekToken, "expected term");
     }
     printNonTerminal("/term");
@@ -108,8 +126,6 @@ public class Parser {
   }
 
   void parseSubroutineCall() {
-    expectPeek(TokenType.IDENT);
-
     if (peekTokenIs(TokenType.DOT)) {
       expectPeek(TokenType.DOT);
       expectPeek(TokenType.IDENT);
@@ -122,6 +138,7 @@ public class Parser {
   void parseDo() {
     printNonTerminal("doStatement");
     expectPeek(TokenType.DO);
+    expectPeek(TokenType.IDENT);
     parseSubroutineCall();
     expectPeek(TokenType.SEMICOLON);
     printNonTerminal("/doStatement");

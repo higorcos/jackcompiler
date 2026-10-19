@@ -74,6 +74,79 @@ class ParserTest {
   }
 
   @Test
+  void termArrayAccess() {
+    Parser p = parser("a[2];");
+    p.parseTerm();
+    assertEquals(xml(
+        "<term>",
+        "  <identifier> a </identifier>",
+        "  <symbol> [ </symbol>",
+        "  <expression>",
+        "    <term>",
+        "      <integerConstant> 2 </integerConstant>",
+        "    </term>",
+        "  </expression>",
+        "  <symbol> ] </symbol>",
+        "</term>"), p.xmlOutput());
+  }
+
+  @Test
+  void termSubroutineCall() {
+    Parser p = parser("Keyboard.keyPressed();");
+    p.parseTerm();
+    assertEquals(xml(
+        "<term>",
+        "  <identifier> Keyboard </identifier>",
+        "  <symbol> . </symbol>",
+        "  <identifier> keyPressed </identifier>",
+        "  <symbol> ( </symbol>",
+        "  <symbol> ) </symbol>",
+        "</term>"), p.xmlOutput());
+  }
+
+  @Test
+  void termParenthesizedExpression() {
+    Parser p = parser("(x);");
+    p.parseTerm();
+    assertEquals(xml(
+        "<term>",
+        "  <symbol> ( </symbol>",
+        "  <expression>",
+        "    <term>",
+        "      <identifier> x </identifier>",
+        "    </term>",
+        "  </expression>",
+        "  <symbol> ) </symbol>",
+        "</term>"), p.xmlOutput());
+  }
+
+  @Test
+  void termUnaryMinus() {
+    Parser p = parser("-j;");
+    p.parseTerm();
+    assertEquals(xml(
+        "<term>",
+        "  <symbol> - </symbol>",
+        "  <term>",
+        "    <identifier> j </identifier>",
+        "  </term>",
+        "</term>"), p.xmlOutput());
+  }
+
+  @Test
+  void termUnaryNot() {
+    Parser p = parser("~exit;");
+    p.parseTerm();
+    assertEquals(xml(
+        "<term>",
+        "  <symbol> ~ </symbol>",
+        "  <term>",
+        "    <identifier> exit </identifier>",
+        "  </term>",
+        "</term>"), p.xmlOutput());
+  }
+
+  @Test
   void expressionWithOperator() {
     Parser p = parser("10+20;");
     p.parseExpression();
