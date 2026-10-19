@@ -166,4 +166,18 @@ class ParserTest {
     SyntaxException e = assertThrows(SyntaxException.class, p::parseLet);
     assertEquals("line 1: expected SEMICOLON, found 'EOF'", e.getMessage());
   }
+
+  @Test
+  void doSimpleCall() {
+    Parser p = parser("do hello();");
+    p.parseDo();
+    assertEquals(xml(
+        "<doStatement>",
+        "  <keyword> do </keyword>",
+        "  <identifier> hello </identifier>",
+        "  <symbol> ( </symbol>",
+        "  <symbol> ) </symbol>",
+        "  <symbol> ; </symbol>",
+        "</doStatement>"), p.xmlOutput());
+  }
 }
