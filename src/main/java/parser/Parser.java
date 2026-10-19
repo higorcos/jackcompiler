@@ -157,6 +157,16 @@ public class Parser {
     printNonTerminal("/doStatement");
   }
 
+  void parseReturn() {
+    printNonTerminal("returnStatement");
+    expectPeek(TokenType.RETURN);
+    if (!peekTokenIs(TokenType.SEMICOLON)) {
+      parseExpression();
+    }
+    expectPeek(TokenType.SEMICOLON);
+    printNonTerminal("/returnStatement");
+  }
+
   private SyntaxException error(Token token, String message) {
     return new SyntaxException(message + ", found '" + token.lexeme + "'", token.line);
   }

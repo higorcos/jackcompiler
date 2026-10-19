@@ -331,4 +331,31 @@ class ParserTest {
         "  <symbol> ; </symbol>",
         "</doStatement>"), p.xmlOutput());
   }
+
+  @Test
+  void returnWithoutExpression() {
+    Parser p = parser("return;");
+    p.parseReturn();
+    assertEquals(xml(
+        "<returnStatement>",
+        "  <keyword> return </keyword>",
+        "  <symbol> ; </symbol>",
+        "</returnStatement>"), p.xmlOutput());
+  }
+
+  @Test
+  void returnWithExpression() {
+    Parser p = parser("return this;");
+    p.parseReturn();
+    assertEquals(xml(
+        "<returnStatement>",
+        "  <keyword> return </keyword>",
+        "  <expression>",
+        "    <term>",
+        "      <keyword> this </keyword>",
+        "    </term>",
+        "  </expression>",
+        "  <symbol> ; </symbol>",
+        "</returnStatement>"), p.xmlOutput());
+  }
 }
