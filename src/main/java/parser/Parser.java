@@ -107,6 +107,20 @@ public class Parser {
     printNonTerminal("/letStatement");
   }
 
+  void parseSubroutineCall() {
+    expectPeek(TokenType.IDENT);
+    expectPeek(TokenType.LPAREN);
+    expectPeek(TokenType.RPAREN);
+  }
+
+  void parseDo() {
+    printNonTerminal("doStatement");
+    expectPeek(TokenType.DO);
+    parseSubroutineCall();
+    expectPeek(TokenType.SEMICOLON);
+    printNonTerminal("/doStatement");
+  }
+
   private SyntaxException error(Token token, String message) {
     return new SyntaxException(message + ", found '" + token.lexeme + "'", token.line);
   }
