@@ -109,6 +109,12 @@ public class Parser {
 
   void parseSubroutineCall() {
     expectPeek(TokenType.IDENT);
+
+    if (peekTokenIs(TokenType.DOT)) {
+      expectPeek(TokenType.DOT);
+      expectPeek(TokenType.IDENT);
+    }
+
     expectPeek(TokenType.LPAREN);
     expectPeek(TokenType.RPAREN);
   }

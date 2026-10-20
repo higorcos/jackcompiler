@@ -180,4 +180,20 @@ class ParserTest {
         "  <symbol> ; </symbol>",
         "</doStatement>"), p.xmlOutput());
   }
+
+  @Test
+  void doQualifiedCall() {
+    Parser p = parser("do game.run();");
+    p.parseDo();
+    assertEquals(xml(
+        "<doStatement>",
+        "  <keyword> do </keyword>",
+        "  <identifier> game </identifier>",
+        "  <symbol> . </symbol>",
+        "  <identifier> run </identifier>",
+        "  <symbol> ( </symbol>",
+        "  <symbol> ) </symbol>",
+        "  <symbol> ; </symbol>",
+        "</doStatement>"), p.xmlOutput());
+  }
 }
