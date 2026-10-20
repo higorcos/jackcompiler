@@ -116,4 +116,54 @@ class ParserTest {
         "  </term>",
         "</expression>"), p.xmlOutput());
   }
+
+  @Test
+  void letSimple() {
+    Parser p = parser("let x = 10;");
+    p.parseLet();
+    assertEquals(xml(
+        "<letStatement>",
+        "  <keyword> let </keyword>",
+        "  <identifier> x </identifier>",
+        "  <symbol> = </symbol>",
+        "  <expression>",
+        "    <term>",
+        "      <integerConstant> 10 </integerConstant>",
+        "    </term>",
+        "  </expression>",
+        "  <symbol> ; </symbol>",
+        "</letStatement>"), p.xmlOutput());
+  }
+
+  @Test
+  void letWithArrayIndex() {
+    Parser p = parser("let a[1] = 2;");
+    p.parseLet();
+    assertEquals(xml(
+        "<letStatement>",
+        "  <keyword> let </keyword>",
+        "  <identifier> a </identifier>",
+        "  <symbol> [ </symbol>",
+        "  <expression>",
+        "    <term>",
+        "      <integerConstant> 1 </integerConstant>",
+        "    </term>",
+        "  </expression>",
+        "  <symbol> ] </symbol>",
+        "  <symbol> = </symbol>",
+        "  <expression>",
+        "    <term>",
+        "      <integerConstant> 2 </integerConstant>",
+        "    </term>",
+        "  </expression>",
+        "  <symbol> ; </symbol>",
+        "</letStatement>"), p.xmlOutput());
+  }
+
+  @Test
+  void letMissingSemicolonThrowsSyntaxException() {
+    Parser p = parser("let x = 10");
+    SyntaxException e = assertThrows(SyntaxException.class, p::parseLet);
+    assertEquals("line 1: expected SEMICOLON, found 'EOF'", e.getMessage());
+  }
 }

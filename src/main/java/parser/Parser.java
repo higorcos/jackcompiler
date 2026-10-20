@@ -90,6 +90,23 @@ public class Parser {
     printNonTerminal("/expression");
   }
 
+  void parseLet() {
+    printNonTerminal("letStatement");
+    expectPeek(TokenType.LET);
+    expectPeek(TokenType.IDENT);
+
+    if (peekTokenIs(TokenType.LBRACKET)) {
+      expectPeek(TokenType.LBRACKET);
+      parseExpression();
+      expectPeek(TokenType.RBRACKET);
+    }
+
+    expectPeek(TokenType.EQ);
+    parseExpression();
+    expectPeek(TokenType.SEMICOLON);
+    printNonTerminal("/letStatement");
+  }
+
   private SyntaxException error(Token token, String message) {
     return new SyntaxException(message + ", found '" + token.lexeme + "'", token.line);
   }
