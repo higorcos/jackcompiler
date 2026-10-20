@@ -358,4 +358,46 @@ class ParserTest {
         "  <symbol> ; </symbol>",
         "</returnStatement>"), p.xmlOutput());
   }
+
+  @Test
+  void statementsEmpty() {
+    Parser p = parser("}");
+    p.parseStatements();
+    assertEquals(xml(
+        "<statements>",
+        "</statements>"), p.xmlOutput());
+  }
+
+  @Test
+  void statementsSequence() {
+    Parser p = parser("let x = 1; do f(); return; }");
+    p.parseStatements();
+    assertEquals(xml(
+        "<statements>",
+        "  <letStatement>",
+        "    <keyword> let </keyword>",
+        "    <identifier> x </identifier>",
+        "    <symbol> = </symbol>",
+        "    <expression>",
+        "      <term>",
+        "        <integerConstant> 1 </integerConstant>",
+        "      </term>",
+        "    </expression>",
+        "    <symbol> ; </symbol>",
+        "  </letStatement>",
+        "  <doStatement>",
+        "    <keyword> do </keyword>",
+        "    <identifier> f </identifier>",
+        "    <symbol> ( </symbol>",
+        "    <expressionList>",
+        "    </expressionList>",
+        "    <symbol> ) </symbol>",
+        "    <symbol> ; </symbol>",
+        "  </doStatement>",
+        "  <returnStatement>",
+        "    <keyword> return </keyword>",
+        "    <symbol> ; </symbol>",
+        "  </returnStatement>",
+        "</statements>"), p.xmlOutput());
+  }
 }

@@ -167,6 +167,30 @@ public class Parser {
     printNonTerminal("/returnStatement");
   }
 
+  private static boolean isStatement(TokenType type) {
+    return switch (type) {
+      case LET, DO, RETURN -> true;
+      default -> false;
+    };
+  }
+
+  void parseStatements() {
+    printNonTerminal("statements");
+    while (isStatement(peekToken.type)) {
+      parseStatement();
+    }
+    printNonTerminal("/statements");
+  }
+
+  private void parseStatement() {
+    switch (peekToken.type) {
+      case LET -> parseLet();
+      case DO -> parseDo();
+      case RETURN -> parseReturn();
+      default -> throw error(peekToken, "expected statement");
+    }
+  }
+
   private SyntaxException error(Token token, String message) {
     return new SyntaxException(message + ", found '" + token.lexeme + "'", token.line);
   }
