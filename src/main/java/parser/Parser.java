@@ -108,6 +108,18 @@ public class Parser {
     printNonTerminal("/expression");
   }
 
+  void parseExpressionList() {
+    printNonTerminal("expressionList");
+    if (!peekTokenIs(TokenType.RPAREN)) {
+      parseExpression();
+      while (peekTokenIs(TokenType.COMMA)) {
+        expectPeek(TokenType.COMMA);
+        parseExpression();
+      }
+    }
+    printNonTerminal("/expressionList");
+  }
+
   void parseLet() {
     printNonTerminal("letStatement");
     expectPeek(TokenType.LET);
@@ -132,6 +144,7 @@ public class Parser {
     }
 
     expectPeek(TokenType.LPAREN);
+    parseExpressionList();
     expectPeek(TokenType.RPAREN);
   }
 

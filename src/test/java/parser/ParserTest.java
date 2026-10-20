@@ -100,6 +100,41 @@ class ParserTest {
         "  <symbol> . </symbol>",
         "  <identifier> keyPressed </identifier>",
         "  <symbol> ( </symbol>",
+        "  <expressionList>",
+        "  </expressionList>",
+        "  <symbol> ) </symbol>",
+        "</term>"), p.xmlOutput());
+  }
+
+  @Test
+  void termSubroutineCallWithArguments() {
+    Parser p = parser("Square.new(0, 0, 30);");
+    p.parseTerm();
+    assertEquals(xml(
+        "<term>",
+        "  <identifier> Square </identifier>",
+        "  <symbol> . </symbol>",
+        "  <identifier> new </identifier>",
+        "  <symbol> ( </symbol>",
+        "  <expressionList>",
+        "    <expression>",
+        "      <term>",
+        "        <integerConstant> 0 </integerConstant>",
+        "      </term>",
+        "    </expression>",
+        "    <symbol> , </symbol>",
+        "    <expression>",
+        "      <term>",
+        "        <integerConstant> 0 </integerConstant>",
+        "      </term>",
+        "    </expression>",
+        "    <symbol> , </symbol>",
+        "    <expression>",
+        "      <term>",
+        "        <integerConstant> 30 </integerConstant>",
+        "      </term>",
+        "    </expression>",
+        "  </expressionList>",
         "  <symbol> ) </symbol>",
         "</term>"), p.xmlOutput());
   }
@@ -249,6 +284,8 @@ class ParserTest {
         "  <keyword> do </keyword>",
         "  <identifier> hello </identifier>",
         "  <symbol> ( </symbol>",
+        "  <expressionList>",
+        "  </expressionList>",
         "  <symbol> ) </symbol>",
         "  <symbol> ; </symbol>",
         "</doStatement>"), p.xmlOutput());
@@ -265,6 +302,31 @@ class ParserTest {
         "  <symbol> . </symbol>",
         "  <identifier> run </identifier>",
         "  <symbol> ( </symbol>",
+        "  <expressionList>",
+        "  </expressionList>",
+        "  <symbol> ) </symbol>",
+        "  <symbol> ; </symbol>",
+        "</doStatement>"), p.xmlOutput());
+  }
+
+  @Test
+  void doCallWithArgument() {
+    Parser p = parser("do Memory.deAlloc(this);");
+    p.parseDo();
+    assertEquals(xml(
+        "<doStatement>",
+        "  <keyword> do </keyword>",
+        "  <identifier> Memory </identifier>",
+        "  <symbol> . </symbol>",
+        "  <identifier> deAlloc </identifier>",
+        "  <symbol> ( </symbol>",
+        "  <expressionList>",
+        "    <expression>",
+        "      <term>",
+        "        <keyword> this </keyword>",
+        "      </term>",
+        "    </expression>",
+        "  </expressionList>",
         "  <symbol> ) </symbol>",
         "  <symbol> ; </symbol>",
         "</doStatement>"), p.xmlOutput());
