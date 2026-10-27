@@ -679,4 +679,62 @@ class ParserTest {
         "  </subroutineBody>",
         "</subroutineDec>"), p.xmlOutput());
   }
+
+  @Test
+  void classEmpty() {
+    Parser p = parser("class Main { }");
+    p.parseClass();
+    assertEquals(xml(
+        "<class>",
+        "  <keyword> class </keyword>",
+        "  <identifier> Main </identifier>",
+        "  <symbol> { </symbol>",
+        "  <symbol> } </symbol>",
+        "</class>"), p.xmlOutput());
+  }
+
+  @Test
+  void parseClassWithVarAndSubroutine() {
+    Parser p = parser("class A { static int x; function void f() { return; } }");
+    p.parse();
+    assertEquals(xml(
+        "<class>",
+        "  <keyword> class </keyword>",
+        "  <identifier> A </identifier>",
+        "  <symbol> { </symbol>",
+        "  <classVarDec>",
+        "    <keyword> static </keyword>",
+        "    <keyword> int </keyword>",
+        "    <identifier> x </identifier>",
+        "    <symbol> ; </symbol>",
+        "  </classVarDec>",
+        "  <subroutineDec>",
+        "    <keyword> function </keyword>",
+        "    <keyword> void </keyword>",
+        "    <identifier> f </identifier>",
+        "    <symbol> ( </symbol>",
+        "    <parameterList>",
+        "    </parameterList>",
+        "    <symbol> ) </symbol>",
+        "    <subroutineBody>",
+        "      <symbol> { </symbol>",
+        "      <statements>",
+        "        <returnStatement>",
+        "          <keyword> return </keyword>",
+        "          <symbol> ; </symbol>",
+        "        </returnStatement>",
+        "      </statements>",
+        "      <symbol> } </symbol>",
+        "    </subroutineBody>",
+        "  </subroutineDec>",
+        "  <symbol> } </symbol>",
+        "</class>"), p.xmlOutput());
+  }
+
+  @Test
+  void parseRejectsTrailingTokens() {
+    Parser p = parser("class A { } x");
+    SyntaxException e = assertThrows(SyntaxException.class, p::parse);
+    assertEquals("line 1: expected end of file, found 'x'", e.getMessage());
+  }
 }

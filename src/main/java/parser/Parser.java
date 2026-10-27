@@ -296,6 +296,32 @@ public class Parser {
     printNonTerminal("/subroutineBody");
   }
 
+  public void parse() {
+    parseClass();
+    if (!peekTokenIs(TokenType.EOF)) {
+      throw error(peekToken, "expected end of file");
+    }
+  }
+
+  void parseClass() {
+    printNonTerminal("class");
+    expectPeek(TokenType.CLASS);
+    expectPeek(TokenType.IDENT);
+    expectPeek(TokenType.LBRACE);
+
+    while (peekTokenIs(TokenType.STATIC) || peekTokenIs(TokenType.FIELD)) {
+      parseClassVarDec();
+    }
+
+    while (peekTokenIs(TokenType.CONSTRUCTOR) || peekTokenIs(TokenType.FUNCTION)
+        || peekTokenIs(TokenType.METHOD)) {
+      parseSubroutine();
+    }
+
+    expectPeek(TokenType.RBRACE);
+    printNonTerminal("/class");
+  }
+
   private SyntaxException error(Token token, String message) {
     return new SyntaxException(message + ", found '" + token.lexeme + "'", token.line);
   }
