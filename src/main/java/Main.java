@@ -1,9 +1,8 @@
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import lexer.LexicalException;
-import lexer.Scanner;
-import lexer.Token;
-import lexer.TokenType;
+import lexer.TokenXml;
 import parser.Parser;
 import parser.SyntaxException;
 
@@ -17,10 +16,12 @@ public class Main {
       System.exit(1);
     }
 
-    byte[] input = Files.readAllBytes(Paths.get(args[first]));
+    Path source = Paths.get(args[first]);
+    Path target = count == 2 ? Paths.get(args[first + 1]) : defaultOutput(source, tokenMode);
+    byte[] input = Files.readAllBytes(source);
     String output;
     try {
-      output = tokenMode ? tokens(input) : tree(input);
+      output = tokenMode ? TokenXml.of(input) : tree(input);
     } catch (LexicalException e) {
       System.err.println("lexical error at " + e.getMessage());
       System.exit(1);
@@ -31,20 +32,18 @@ public class Main {
       return;
     }
 
-    if (count == 2) {
-      Files.writeString(Paths.get(args[first + 1]), output);
-    } else {
-      System.out.print(output);
+    if (target.getParent() != null) {
+      Files.createDirectories(target.getParent());
     }
+    Files.writeString(target, output);
+    System.out.println("wrote " + target);
   }
 
-  private static String tokens(byte[] input) {
-    Scanner scan = new Scanner(input);
-    StringBuilder out = new StringBuilder("<tokens>\n");
-    for (Token tk = scan.nextToken(); tk.type != TokenType.EOF; tk = scan.nextToken()) {
-      out.append(tk).append("\n");
-    }
-    return out.append("</tokens>\n").toString();
+  private static Path defaultOutput(Path source, boolean tokenMode) {
+    String name = source.getFileName().toString().replaceFirst("\\.jack$", "");
+    return tokenMode
+        ? Paths.get("output", "lexer", name + "T.xml")
+        : Paths.get("output", "parser", name + ".xml");
   }
 
   private static String tree(byte[] input) {
