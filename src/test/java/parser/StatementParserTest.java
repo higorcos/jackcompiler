@@ -56,7 +56,7 @@ class StatementParserTest {
   void letMissingSemicolonThrowsSyntaxException() {
     Parser p = parser("let x = 10");
     SyntaxException e = assertThrows(SyntaxException.class, p::parseLet);
-    assertEquals("line 1: expected SEMICOLON, found 'EOF'", e.getMessage());
+    assertEquals("line 1, column 11: expected SEMICOLON, found 'EOF'", e.getMessage());
   }
 
   @Test

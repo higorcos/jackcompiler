@@ -63,7 +63,7 @@ class ExpressionParserTest {
   void termInvalidThrowsSyntaxException() {
     Parser p = parser(";");
     SyntaxException e = assertThrows(SyntaxException.class, p::parseTerm);
-    assertEquals("line 1: expected term, found ';'", e.getMessage());
+    assertEquals("line 1, column 1: expected term, found ';'", e.getMessage());
   }
 
   @Test

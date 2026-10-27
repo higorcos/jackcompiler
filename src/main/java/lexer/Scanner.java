@@ -4,6 +4,8 @@ public class Scanner {
   private final byte[] input;
   private int current;
   private int line = 1;
+  private int column = 1;
+  private int startColumn;
 
   public Scanner(byte[] input) {
     this.input = input;
@@ -21,13 +23,16 @@ public class Scanner {
     if (ch != '\0') {
       if (ch == '\n') {
         line++;
+        column = 1;
+      } else {
+        column++;
       }
       current++;
     }
   }
 
   private Token token(TokenType type, String lexeme) {
-    return new Token(type, lexeme, line);
+    return new Token(type, lexeme, line, startColumn);
   }
 
   private boolean isAlpha(char ch) {
@@ -75,7 +80,7 @@ public class Scanner {
     }
 
     if (peek() != '"') {
-      throw new LexicalException("unterminated string", line);
+      throw new LexicalException("unterminated string", line, startColumn);
     }
 
     String s = new String(input, start, current - start);
@@ -95,12 +100,13 @@ public class Scanner {
   }
 
   private void skipBlockComments() {
-    int startLine = line;
+    int commentLine = line;
+    int commentColumn = column;
     advance();
     advance();
     while (true) {
       if (peek() == '\0') {
-        throw new LexicalException("unterminated block comment", startLine);
+        throw new LexicalException("unterminated block comment", commentLine, commentColumn);
       }
       if (peek() == '*' && peekNext() == '/') {
         advance();
@@ -127,6 +133,7 @@ public class Scanner {
 
   public Token nextToken() {
     skipIgnored();
+    startColumn = column;
 
     char ch = peek();
     if (isAlpha(ch)) {
@@ -147,7 +154,7 @@ public class Scanner {
 
     TokenType type = Lexicon.symbolType(ch);
     if (type == null) {
-      throw new LexicalException("unexpected character '" + ch + "'", line);
+      throw new LexicalException("unexpected character '" + ch + "'", line, column);
     }
 
     advance();

@@ -230,6 +230,6 @@ class StructureParserTest {
   void parseRejectsTrailingTokens() {
     Parser p = parser("class A { } x");
     SyntaxException e = assertThrows(SyntaxException.class, p::parse);
-    assertEquals("line 1: expected end of file, found 'x'", e.getMessage());
+    assertEquals("line 1, column 13: expected end of file, found 'x'", e.getMessage());
   }
 }

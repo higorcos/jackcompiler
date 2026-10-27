@@ -69,9 +69,20 @@ class ScannerTest {
   }
 
   @Test
+  void tracksColumnNumbers() {
+    Scanner scan = scanner("let x;\n  y");
+    assertEquals(1, scan.nextToken().column);
+    assertEquals(5, scan.nextToken().column);
+    assertEquals(6, scan.nextToken().column);
+    Token y = scan.nextToken();
+    assertEquals(2, y.line);
+    assertEquals(3, y.column);
+  }
+
+  @Test
   void tokenEscapesXmlCharacters() {
-    assertEquals("<symbol> &lt; </symbol>", new Token(TokenType.LT, "<", 1).toString());
-    assertEquals("<symbol> &amp; </symbol>", new Token(TokenType.AND, "&", 1).toString());
+    assertEquals("<symbol> &lt; </symbol>", new Token(TokenType.LT, "<", 1, 1).toString());
+    assertEquals("<symbol> &amp; </symbol>", new Token(TokenType.AND, "&", 1, 1).toString());
   }
 
   @Test
@@ -90,14 +101,14 @@ class ScannerTest {
   void unexpectedCharacterThrows() {
     Scanner scan = scanner("@");
     LexicalException e = assertThrows(LexicalException.class, scan::nextToken);
-    assertEquals("line 1: unexpected character '@'", e.getMessage());
+    assertEquals("line 1, column 1: unexpected character '@'", e.getMessage());
   }
 
   @Test
   void unterminatedStringThrows() {
     Scanner scan = scanner("\"abc");
     LexicalException e = assertThrows(LexicalException.class, scan::nextToken);
-    assertEquals("line 1: unterminated string", e.getMessage());
+    assertEquals("line 1, column 1: unterminated string", e.getMessage());
   }
 
   @Test
@@ -105,6 +116,6 @@ class ScannerTest {
     Scanner scan = scanner("x\n/* abc");
     scan.nextToken();
     LexicalException e = assertThrows(LexicalException.class, scan::nextToken);
-    assertEquals("line 2: unterminated block comment", e.getMessage());
+    assertEquals("line 2, column 1: unterminated block comment", e.getMessage());
   }
 }

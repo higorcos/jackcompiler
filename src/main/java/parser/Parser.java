@@ -323,7 +323,7 @@ public class Parser {
   }
 
   private SyntaxException error(Token token, String message) {
-    return new SyntaxException(message + ", found '" + token.lexeme + "'", token.line);
+    return new SyntaxException(message + ", found '" + token.lexeme + "'", token.line, token.column);
   }
 
   public String xmlOutput() {
