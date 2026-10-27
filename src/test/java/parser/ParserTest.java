@@ -457,4 +457,60 @@ class ParserTest {
         "  </ifStatement>",
         "</statements>"), p.xmlOutput());
   }
+
+  @Test
+  void whileWithUnaryCondition() {
+    Parser p = parser("while (~exit) { do moveSquare(); }");
+    p.parseWhile();
+    assertEquals(xml(
+        "<whileStatement>",
+        "  <keyword> while </keyword>",
+        "  <symbol> ( </symbol>",
+        "  <expression>",
+        "    <term>",
+        "      <symbol> ~ </symbol>",
+        "      <term>",
+        "        <identifier> exit </identifier>",
+        "      </term>",
+        "    </term>",
+        "  </expression>",
+        "  <symbol> ) </symbol>",
+        "  <symbol> { </symbol>",
+        "  <statements>",
+        "    <doStatement>",
+        "      <keyword> do </keyword>",
+        "      <identifier> moveSquare </identifier>",
+        "      <symbol> ( </symbol>",
+        "      <expressionList>",
+        "      </expressionList>",
+        "      <symbol> ) </symbol>",
+        "      <symbol> ; </symbol>",
+        "    </doStatement>",
+        "  </statements>",
+        "  <symbol> } </symbol>",
+        "</whileStatement>"), p.xmlOutput());
+  }
+
+  @Test
+  void statementsWhileEmptyBody() {
+    Parser p = parser("while (x) { } }");
+    p.parseStatements();
+    assertEquals(xml(
+        "<statements>",
+        "  <whileStatement>",
+        "    <keyword> while </keyword>",
+        "    <symbol> ( </symbol>",
+        "    <expression>",
+        "      <term>",
+        "        <identifier> x </identifier>",
+        "      </term>",
+        "    </expression>",
+        "    <symbol> ) </symbol>",
+        "    <symbol> { </symbol>",
+        "    <statements>",
+        "    </statements>",
+        "    <symbol> } </symbol>",
+        "  </whileStatement>",
+        "</statements>"), p.xmlOutput());
+  }
 }
