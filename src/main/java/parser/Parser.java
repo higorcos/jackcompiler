@@ -242,6 +242,20 @@ public class Parser {
     expectPeek(TokenType.INT, TokenType.CHAR, TokenType.BOOLEAN, TokenType.IDENT);
   }
 
+  void parseParameterList() {
+    printNonTerminal("parameterList");
+    if (!peekTokenIs(TokenType.RPAREN)) {
+      parseType();
+      expectPeek(TokenType.IDENT);
+      while (peekTokenIs(TokenType.COMMA)) {
+        expectPeek(TokenType.COMMA);
+        parseType();
+        expectPeek(TokenType.IDENT);
+      }
+    }
+    printNonTerminal("/parameterList");
+  }
+
   private SyntaxException error(Token token, String message) {
     return new SyntaxException(message + ", found '" + token.lexeme + "'", token.line);
   }

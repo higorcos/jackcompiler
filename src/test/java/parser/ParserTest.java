@@ -554,4 +554,30 @@ class ParserTest {
         "  <symbol> ; </symbol>",
         "</classVarDec>"), p.xmlOutput());
   }
+
+  @Test
+  void parameterListEmpty() {
+    Parser p = parser(")");
+    p.parseParameterList();
+    assertEquals(xml(
+        "<parameterList>",
+        "</parameterList>"), p.xmlOutput());
+  }
+
+  @Test
+  void parameterListMultiple() {
+    Parser p = parser("int Ax, int Ay, int Asize)");
+    p.parseParameterList();
+    assertEquals(xml(
+        "<parameterList>",
+        "  <keyword> int </keyword>",
+        "  <identifier> Ax </identifier>",
+        "  <symbol> , </symbol>",
+        "  <keyword> int </keyword>",
+        "  <identifier> Ay </identifier>",
+        "  <symbol> , </symbol>",
+        "  <keyword> int </keyword>",
+        "  <identifier> Asize </identifier>",
+        "</parameterList>"), p.xmlOutput());
+  }
 }
