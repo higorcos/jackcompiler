@@ -513,4 +513,45 @@ class ParserTest {
         "  </whileStatement>",
         "</statements>"), p.xmlOutput());
   }
+
+  @Test
+  void classVarDecStatic() {
+    Parser p = parser("static boolean test;");
+    p.parseClassVarDec();
+    assertEquals(xml(
+        "<classVarDec>",
+        "  <keyword> static </keyword>",
+        "  <keyword> boolean </keyword>",
+        "  <identifier> test </identifier>",
+        "  <symbol> ; </symbol>",
+        "</classVarDec>"), p.xmlOutput());
+  }
+
+  @Test
+  void classVarDecFieldList() {
+    Parser p = parser("field int x, y;");
+    p.parseClassVarDec();
+    assertEquals(xml(
+        "<classVarDec>",
+        "  <keyword> field </keyword>",
+        "  <keyword> int </keyword>",
+        "  <identifier> x </identifier>",
+        "  <symbol> , </symbol>",
+        "  <identifier> y </identifier>",
+        "  <symbol> ; </symbol>",
+        "</classVarDec>"), p.xmlOutput());
+  }
+
+  @Test
+  void classVarDecClassType() {
+    Parser p = parser("field Square square;");
+    p.parseClassVarDec();
+    assertEquals(xml(
+        "<classVarDec>",
+        "  <keyword> field </keyword>",
+        "  <identifier> Square </identifier>",
+        "  <identifier> square </identifier>",
+        "  <symbol> ; </symbol>",
+        "</classVarDec>"), p.xmlOutput());
+  }
 }

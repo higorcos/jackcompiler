@@ -225,6 +225,23 @@ public class Parser {
     }
   }
 
+  void parseClassVarDec() {
+    printNonTerminal("classVarDec");
+    expectPeek(TokenType.STATIC, TokenType.FIELD);
+    parseType();
+    expectPeek(TokenType.IDENT);
+    while (peekTokenIs(TokenType.COMMA)) {
+      expectPeek(TokenType.COMMA);
+      expectPeek(TokenType.IDENT);
+    }
+    expectPeek(TokenType.SEMICOLON);
+    printNonTerminal("/classVarDec");
+  }
+
+  private void parseType() {
+    expectPeek(TokenType.INT, TokenType.CHAR, TokenType.BOOLEAN, TokenType.IDENT);
+  }
+
   private SyntaxException error(Token token, String message) {
     return new SyntaxException(message + ", found '" + token.lexeme + "'", token.line);
   }
