@@ -256,6 +256,19 @@ public class Parser {
     printNonTerminal("/parameterList");
   }
 
+  void parseVarDec() {
+    printNonTerminal("varDec");
+    expectPeek(TokenType.VAR);
+    parseType();
+    expectPeek(TokenType.IDENT);
+    while (peekTokenIs(TokenType.COMMA)) {
+      expectPeek(TokenType.COMMA);
+      expectPeek(TokenType.IDENT);
+    }
+    expectPeek(TokenType.SEMICOLON);
+    printNonTerminal("/varDec");
+  }
+
   private SyntaxException error(Token token, String message) {
     return new SyntaxException(message + ", found '" + token.lexeme + "'", token.line);
   }

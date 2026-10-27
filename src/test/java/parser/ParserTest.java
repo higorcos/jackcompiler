@@ -580,4 +580,32 @@ class ParserTest {
         "  <identifier> Asize </identifier>",
         "</parameterList>"), p.xmlOutput());
   }
+
+  @Test
+  void varDecList() {
+    Parser p = parser("var int i, j;");
+    p.parseVarDec();
+    assertEquals(xml(
+        "<varDec>",
+        "  <keyword> var </keyword>",
+        "  <keyword> int </keyword>",
+        "  <identifier> i </identifier>",
+        "  <symbol> , </symbol>",
+        "  <identifier> j </identifier>",
+        "  <symbol> ; </symbol>",
+        "</varDec>"), p.xmlOutput());
+  }
+
+  @Test
+  void varDecClassType() {
+    Parser p = parser("var SquareGame game;");
+    p.parseVarDec();
+    assertEquals(xml(
+        "<varDec>",
+        "  <keyword> var </keyword>",
+        "  <identifier> SquareGame </identifier>",
+        "  <identifier> game </identifier>",
+        "  <symbol> ; </symbol>",
+        "</varDec>"), p.xmlOutput());
+  }
 }
