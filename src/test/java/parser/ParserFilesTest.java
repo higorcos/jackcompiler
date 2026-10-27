@@ -29,9 +29,9 @@ class ParserFilesTest {
   @ParameterizedTest
   @ValueSource(strings = {"Main", "Square", "SquareGame"})
   void matchesOfficialXml(String name) throws IOException {
-    Parser p = new Parser(resource(name + ".jack"));
+    Parser p = new Parser(resource("input/" + name + ".jack"));
     p.parse();
-    String expected = new String(resource(name + ".xml"), StandardCharsets.UTF_8);
+    String expected = new String(resource("expected/parser/" + name + ".xml"), StandardCharsets.UTF_8);
     assertEquals(normalizeXml(expected), normalizeXml(p.xmlOutput()));
   }
 }

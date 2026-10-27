@@ -6,7 +6,7 @@ javac -sourcepath src/main/java -d bin src/main/java/Main.java
 
 fail=0
 for name in Main Square SquareGame; do
-  if java -cp bin Main --tokens src/test/resources/$name.jack | diff --strip-trailing-cr -q - src/test/resources/${name}T.xml > /dev/null; then
+  if java -cp bin Main --tokens src/test/resources/input/$name.jack | diff --strip-trailing-cr -q - src/test/resources/expected/lexer/${name}T.xml > /dev/null; then
     echo "OK   tokens $name"
   else
     echo "FAIL tokens $name"
@@ -15,7 +15,7 @@ for name in Main Square SquareGame; do
 done
 
 for name in Main Square SquareGame; do
-  if java -cp bin Main src/test/resources/$name.jack | diff --strip-trailing-cr -q - src/test/resources/$name.xml > /dev/null; then
+  if java -cp bin Main src/test/resources/input/$name.jack | diff --strip-trailing-cr -q - src/test/resources/expected/parser/$name.xml > /dev/null; then
     echo "OK   parser $name"
   else
     echo "FAIL parser $name"
