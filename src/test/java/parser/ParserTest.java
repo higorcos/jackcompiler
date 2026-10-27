@@ -608,4 +608,75 @@ class ParserTest {
         "  <symbol> ; </symbol>",
         "</varDec>"), p.xmlOutput());
   }
+
+  @Test
+  void subroutineConstructorWithParameter() {
+    Parser p = parser("constructor Square new(int Ax) { return this; }");
+    p.parseSubroutine();
+    assertEquals(xml(
+        "<subroutineDec>",
+        "  <keyword> constructor </keyword>",
+        "  <identifier> Square </identifier>",
+        "  <identifier> new </identifier>",
+        "  <symbol> ( </symbol>",
+        "  <parameterList>",
+        "    <keyword> int </keyword>",
+        "    <identifier> Ax </identifier>",
+        "  </parameterList>",
+        "  <symbol> ) </symbol>",
+        "  <subroutineBody>",
+        "    <symbol> { </symbol>",
+        "    <statements>",
+        "      <returnStatement>",
+        "        <keyword> return </keyword>",
+        "        <expression>",
+        "          <term>",
+        "            <keyword> this </keyword>",
+        "          </term>",
+        "        </expression>",
+        "        <symbol> ; </symbol>",
+        "      </returnStatement>",
+        "    </statements>",
+        "    <symbol> } </symbol>",
+        "  </subroutineBody>",
+        "</subroutineDec>"), p.xmlOutput());
+  }
+
+  @Test
+  void subroutineFunctionVoidWithVarDecs() {
+    Parser p = parser("function void main() { var int i; var char c; return; }");
+    p.parseSubroutine();
+    assertEquals(xml(
+        "<subroutineDec>",
+        "  <keyword> function </keyword>",
+        "  <keyword> void </keyword>",
+        "  <identifier> main </identifier>",
+        "  <symbol> ( </symbol>",
+        "  <parameterList>",
+        "  </parameterList>",
+        "  <symbol> ) </symbol>",
+        "  <subroutineBody>",
+        "    <symbol> { </symbol>",
+        "    <varDec>",
+        "      <keyword> var </keyword>",
+        "      <keyword> int </keyword>",
+        "      <identifier> i </identifier>",
+        "      <symbol> ; </symbol>",
+        "    </varDec>",
+        "    <varDec>",
+        "      <keyword> var </keyword>",
+        "      <keyword> char </keyword>",
+        "      <identifier> c </identifier>",
+        "      <symbol> ; </symbol>",
+        "    </varDec>",
+        "    <statements>",
+        "      <returnStatement>",
+        "        <keyword> return </keyword>",
+        "        <symbol> ; </symbol>",
+        "      </returnStatement>",
+        "    </statements>",
+        "    <symbol> } </symbol>",
+        "  </subroutineBody>",
+        "</subroutineDec>"), p.xmlOutput());
+  }
 }

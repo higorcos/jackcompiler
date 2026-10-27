@@ -269,6 +269,33 @@ public class Parser {
     printNonTerminal("/varDec");
   }
 
+  void parseSubroutine() {
+    printNonTerminal("subroutineDec");
+    expectPeek(TokenType.CONSTRUCTOR, TokenType.FUNCTION, TokenType.METHOD);
+    if (peekTokenIs(TokenType.VOID)) {
+      expectPeek(TokenType.VOID);
+    } else {
+      parseType();
+    }
+    expectPeek(TokenType.IDENT);
+    expectPeek(TokenType.LPAREN);
+    parseParameterList();
+    expectPeek(TokenType.RPAREN);
+    parseSubroutineBody();
+    printNonTerminal("/subroutineDec");
+  }
+
+  void parseSubroutineBody() {
+    printNonTerminal("subroutineBody");
+    expectPeek(TokenType.LBRACE);
+    while (peekTokenIs(TokenType.VAR)) {
+      parseVarDec();
+    }
+    parseStatements();
+    expectPeek(TokenType.RBRACE);
+    printNonTerminal("/subroutineBody");
+  }
+
   private SyntaxException error(Token token, String message) {
     return new SyntaxException(message + ", found '" + token.lexeme + "'", token.line);
   }
