@@ -89,4 +89,45 @@ class SubroutineCodeTest {
         "push local 0",
         "return"), p.vmOutput());
   }
+
+  @Test
+  void functionCallWithoutArguments() {
+    Parser p = parser("Keyboard.keyPressed();");
+    p.parseExpression();
+    assertEquals(vm("call Keyboard.keyPressed 0"), p.vmOutput());
+  }
+
+  @Test
+  void functionCallWithArguments() {
+    Parser p = parser("Math.max(1, 2);");
+    p.parseExpression();
+    assertEquals(vm(
+        "push constant 1",
+        "push constant 2",
+        "call Math.max 2"), p.vmOutput());
+  }
+
+  @Test
+  void functionCallInsideExpression() {
+    Parser p = parser("1 + Math.abs(-2);");
+    p.parseExpression();
+    assertEquals(vm(
+        "push constant 1",
+        "push constant 2",
+        "neg",
+        "call Math.abs 1",
+        "add"), p.vmOutput());
+  }
+
+  @Test
+  void nestedFunctionCalls() {
+    Parser p = parser("Math.max(Math.min(1, 2), 3);");
+    p.parseExpression();
+    assertEquals(vm(
+        "push constant 1",
+        "push constant 2",
+        "call Math.min 2",
+        "push constant 3",
+        "call Math.max 2"), p.vmOutput());
+  }
 }

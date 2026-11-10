@@ -179,16 +179,20 @@ public class Parser {
     }
   }
 
-  void parseExpressionList() {
+  int parseExpressionList() {
     printNonTerminal("expressionList");
+    int count = 0;
     if (!peekTokenIs(TokenType.RPAREN)) {
       parseExpression();
+      count++;
       while (peekTokenIs(TokenType.COMMA)) {
         expectPeek(TokenType.COMMA);
         parseExpression();
+        count++;
       }
     }
     printNonTerminal("/expressionList");
+    return count;
   }
 
   void parseLet() {
@@ -215,14 +219,17 @@ public class Parser {
   }
 
   void parseSubroutineCall() {
+    String functionName = currentToken.lexeme;
     if (peekTokenIs(TokenType.DOT)) {
       expectPeek(TokenType.DOT);
       expectPeek(TokenType.IDENT);
+      functionName = functionName + "." + currentToken.lexeme;
     }
 
     expectPeek(TokenType.LPAREN);
-    parseExpressionList();
+    int nArgs = parseExpressionList();
     expectPeek(TokenType.RPAREN);
+    vmWriter.writeCall(functionName, nArgs);
   }
 
   void parseDo() {
