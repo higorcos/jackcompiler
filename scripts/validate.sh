@@ -6,7 +6,7 @@ javac -sourcepath src/main/java -d bin src/main/java/Main.java
 
 for name in Main Square SquareGame; do
   java -cp bin Main --tokens src/test/resources/input/$name.jack > /dev/null
-  java -cp bin Main src/test/resources/input/$name.jack > /dev/null
+  java -cp bin Main --xml src/test/resources/input/$name.jack > /dev/null
 done
 
 fail=0
