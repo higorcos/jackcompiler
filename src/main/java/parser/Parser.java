@@ -2,6 +2,7 @@ package parser;
 
 import codegen.SymbolTable;
 import codegen.SymbolTable.Kind;
+import codegen.SymbolTable.Symbol;
 import codegen.VMWriter;
 import codegen.VMWriter.Command;
 import codegen.VMWriter.Segment;
@@ -70,6 +71,23 @@ public class Parser {
     }
   }
 
+  private static Segment kind2Segment(Kind kind) {
+    return switch (kind) {
+      case STATIC -> Segment.STATIC;
+      case FIELD -> Segment.THIS;
+      case VAR -> Segment.LOCAL;
+      case ARG -> Segment.ARG;
+    };
+  }
+
+  private Symbol resolveVariable(Token token) {
+    Symbol symbol = symbolTable.resolve(token.lexeme);
+    if (symbol == null) {
+      throw new SemanticException("undeclared variable '" + token.lexeme + "'", token.line, token.column);
+    }
+    return symbol;
+  }
+
   void parseTerm() {
     printNonTerminal("term");
     switch (peekToken.type) {
@@ -106,6 +124,9 @@ public class Parser {
           expectPeek(TokenType.RBRACKET);
         } else if (peekTokenIs(TokenType.LPAREN) || peekTokenIs(TokenType.DOT)) {
           parseSubroutineCall();
+        } else {
+          Symbol symbol = resolveVariable(currentToken);
+          vmWriter.writePush(kind2Segment(symbol.kind()), symbol.index());
         }
       }
       case LPAREN -> {
@@ -174,15 +195,21 @@ public class Parser {
     printNonTerminal("letStatement");
     expectPeek(TokenType.LET);
     expectPeek(TokenType.IDENT);
+    Symbol symbol = resolveVariable(currentToken);
+    boolean isArray = false;
 
     if (peekTokenIs(TokenType.LBRACKET)) {
       expectPeek(TokenType.LBRACKET);
       parseExpression();
       expectPeek(TokenType.RBRACKET);
+      isArray = true;
     }
 
     expectPeek(TokenType.EQ);
     parseExpression();
+    if (!isArray) {
+      vmWriter.writePop(kind2Segment(symbol.kind()), symbol.index());
+    }
     expectPeek(TokenType.SEMICOLON);
     printNonTerminal("/letStatement");
   }

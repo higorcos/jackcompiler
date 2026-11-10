@@ -3,6 +3,7 @@ package parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static parser.ParserTestSupport.parser;
+import static parser.ParserTestSupport.parserWithVars;
 import static parser.ParserTestSupport.xml;
 
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ class ExpressionParserTest {
 
   @Test
   void termVarName() {
-    Parser p = parser("x;");
+    Parser p = parserWithVars("x;", "x");
     p.parseTerm();
     assertEquals(xml(
         "<term>",
@@ -134,7 +135,7 @@ class ExpressionParserTest {
 
   @Test
   void termParenthesizedExpression() {
-    Parser p = parser("(x);");
+    Parser p = parserWithVars("(x);", "x");
     p.parseTerm();
     assertEquals(xml(
         "<term>",
@@ -150,7 +151,7 @@ class ExpressionParserTest {
 
   @Test
   void termUnaryMinus() {
-    Parser p = parser("-j;");
+    Parser p = parserWithVars("-j;", "j");
     p.parseTerm();
     assertEquals(xml(
         "<term>",
@@ -163,7 +164,7 @@ class ExpressionParserTest {
 
   @Test
   void termUnaryNot() {
-    Parser p = parser("~exit;");
+    Parser p = parserWithVars("~exit;", "exit");
     p.parseTerm();
     assertEquals(xml(
         "<term>",
@@ -192,7 +193,7 @@ class ExpressionParserTest {
 
   @Test
   void expressionEscapesLessThan() {
-    Parser p = parser("a<b;");
+    Parser p = parserWithVars("a<b;", "a", "b");
     p.parseExpression();
     assertEquals(xml(
         "<expression>",
@@ -208,7 +209,7 @@ class ExpressionParserTest {
 
   @Test
   void expressionStringIsNotOperator() {
-    Parser p = parser("x \"+\";");
+    Parser p = parserWithVars("x \"+\";", "x");
     p.parseExpression();
     assertEquals(xml(
         "<expression>",

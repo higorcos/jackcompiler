@@ -3,6 +3,7 @@ package parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static parser.ParserTestSupport.parser;
+import static parser.ParserTestSupport.parserWithVars;
 import static parser.ParserTestSupport.xml;
 
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ class StatementParserTest {
 
   @Test
   void letSimple() {
-    Parser p = parser("let x = 10;");
+    Parser p = parserWithVars("let x = 10;", "x");
     p.parseLet();
     assertEquals(xml(
         "<letStatement>",
@@ -29,7 +30,7 @@ class StatementParserTest {
 
   @Test
   void letWithArrayIndex() {
-    Parser p = parser("let a[1] = 2;");
+    Parser p = parserWithVars("let a[1] = 2;", "a");
     p.parseLet();
     assertEquals(xml(
         "<letStatement>",
@@ -54,7 +55,7 @@ class StatementParserTest {
 
   @Test
   void letMissingSemicolonThrowsSyntaxException() {
-    Parser p = parser("let x = 10");
+    Parser p = parserWithVars("let x = 10", "x");
     SyntaxException e = assertThrows(SyntaxException.class, p::parseLet);
     assertEquals("line 1, column 11: expected SEMICOLON, found 'EOF'", e.getMessage());
   }
@@ -154,7 +155,7 @@ class StatementParserTest {
 
   @Test
   void statementsSequence() {
-    Parser p = parser("let x = 1; do f(); return; }");
+    Parser p = parserWithVars("let x = 1; do f(); return; }", "x");
     p.parseStatements();
     assertEquals(xml(
         "<statements>",
@@ -187,7 +188,7 @@ class StatementParserTest {
 
   @Test
   void ifWithoutElse() {
-    Parser p = parser("if (x) { return; }");
+    Parser p = parserWithVars("if (x) { return; }", "x");
     p.parseIf();
     assertEquals(xml(
         "<ifStatement>",
@@ -244,7 +245,7 @@ class StatementParserTest {
 
   @Test
   void whileWithUnaryCondition() {
-    Parser p = parser("while (~exit) { do moveSquare(); }");
+    Parser p = parserWithVars("while (~exit) { do moveSquare(); }", "exit");
     p.parseWhile();
     assertEquals(xml(
         "<whileStatement>",
@@ -277,7 +278,7 @@ class StatementParserTest {
 
   @Test
   void statementsWhileEmptyBody() {
-    Parser p = parser("while (x) { } }");
+    Parser p = parserWithVars("while (x) { } }", "x");
     p.parseStatements();
     assertEquals(xml(
         "<statements>",

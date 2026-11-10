@@ -4,6 +4,7 @@ import java.nio.file.Paths;
 import lexer.LexicalException;
 import lexer.TokenXml;
 import parser.Parser;
+import parser.SemanticException;
 import parser.SyntaxException;
 
 public class Main {
@@ -28,6 +29,10 @@ public class Main {
       return;
     } catch (SyntaxException e) {
       System.err.println("syntax error at " + e.getMessage());
+      System.exit(1);
+      return;
+    } catch (SemanticException e) {
+      System.err.println("semantic error at " + e.getMessage());
       System.exit(1);
       return;
     }
