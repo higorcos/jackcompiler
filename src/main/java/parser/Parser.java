@@ -1,5 +1,7 @@
 package parser;
 
+import codegen.SymbolTable;
+import codegen.SymbolTable.Kind;
 import java.util.Arrays;
 import lexer.Scanner;
 import lexer.Token;
@@ -8,9 +10,11 @@ import lexer.TokenType;
 public class Parser {
   private final Scanner scan;
   private final StringBuilder xml = new StringBuilder();
+  private final SymbolTable symbolTable = new SymbolTable();
   private Token currentToken;
   private Token peekToken;
   private int level;
+  private String className;
 
   public Parser(byte[] input) {
     scan = new Scanner(input);
@@ -228,11 +232,15 @@ public class Parser {
   void parseClassVarDec() {
     printNonTerminal("classVarDec");
     expectPeek(TokenType.STATIC, TokenType.FIELD);
+    Kind kind = currentToken.type == TokenType.STATIC ? Kind.STATIC : Kind.FIELD;
     parseType();
+    String type = currentToken.lexeme;
     expectPeek(TokenType.IDENT);
+    symbolTable.define(currentToken.lexeme, type, kind);
     while (peekTokenIs(TokenType.COMMA)) {
       expectPeek(TokenType.COMMA);
       expectPeek(TokenType.IDENT);
+      symbolTable.define(currentToken.lexeme, type, kind);
     }
     expectPeek(TokenType.SEMICOLON);
     printNonTerminal("/classVarDec");
@@ -246,11 +254,15 @@ public class Parser {
     printNonTerminal("parameterList");
     if (!peekTokenIs(TokenType.RPAREN)) {
       parseType();
+      String type = currentToken.lexeme;
       expectPeek(TokenType.IDENT);
+      symbolTable.define(currentToken.lexeme, type, Kind.ARG);
       while (peekTokenIs(TokenType.COMMA)) {
         expectPeek(TokenType.COMMA);
         parseType();
+        type = currentToken.lexeme;
         expectPeek(TokenType.IDENT);
+        symbolTable.define(currentToken.lexeme, type, Kind.ARG);
       }
     }
     printNonTerminal("/parameterList");
@@ -260,10 +272,13 @@ public class Parser {
     printNonTerminal("varDec");
     expectPeek(TokenType.VAR);
     parseType();
+    String type = currentToken.lexeme;
     expectPeek(TokenType.IDENT);
+    symbolTable.define(currentToken.lexeme, type, Kind.VAR);
     while (peekTokenIs(TokenType.COMMA)) {
       expectPeek(TokenType.COMMA);
       expectPeek(TokenType.IDENT);
+      symbolTable.define(currentToken.lexeme, type, Kind.VAR);
     }
     expectPeek(TokenType.SEMICOLON);
     printNonTerminal("/varDec");
@@ -271,7 +286,11 @@ public class Parser {
 
   void parseSubroutine() {
     printNonTerminal("subroutineDec");
+    symbolTable.startSubroutine();
     expectPeek(TokenType.CONSTRUCTOR, TokenType.FUNCTION, TokenType.METHOD);
+    if (currentToken.type == TokenType.METHOD) {
+      symbolTable.define("this", className, Kind.ARG);
+    }
     if (peekTokenIs(TokenType.VOID)) {
       expectPeek(TokenType.VOID);
     } else {
@@ -307,6 +326,7 @@ public class Parser {
     printNonTerminal("class");
     expectPeek(TokenType.CLASS);
     expectPeek(TokenType.IDENT);
+    className = currentToken.lexeme;
     expectPeek(TokenType.LBRACE);
 
     while (peekTokenIs(TokenType.STATIC) || peekTokenIs(TokenType.FIELD)) {
@@ -324,6 +344,10 @@ public class Parser {
 
   private SyntaxException error(Token token, String message) {
     return new SyntaxException(message + ", found '" + token.lexeme + "'", token.line, token.column);
+  }
+
+  SymbolTable symbolTable() {
+    return symbolTable;
   }
 
   public String xmlOutput() {
