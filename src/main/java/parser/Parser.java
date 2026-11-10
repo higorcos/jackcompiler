@@ -395,7 +395,8 @@ public class Parser {
     ifLabelNum = 0;
     whileLabelNum = 0;
     expectPeek(TokenType.CONSTRUCTOR, TokenType.FUNCTION, TokenType.METHOD);
-    if (currentToken.type == TokenType.METHOD) {
+    TokenType subroutineType = currentToken.type;
+    if (subroutineType == TokenType.METHOD) {
       symbolTable.define("this", className, Kind.ARG);
     }
     if (peekTokenIs(TokenType.VOID)) {
@@ -404,19 +405,21 @@ public class Parser {
       parseType();
     }
     expectPeek(TokenType.IDENT);
+    String functionName = className + "." + currentToken.lexeme;
     expectPeek(TokenType.LPAREN);
     parseParameterList();
     expectPeek(TokenType.RPAREN);
-    parseSubroutineBody();
+    parseSubroutineBody(functionName, subroutineType);
     printNonTerminal("/subroutineDec");
   }
 
-  void parseSubroutineBody() {
+  void parseSubroutineBody(String functionName, TokenType subroutineType) {
     printNonTerminal("subroutineBody");
     expectPeek(TokenType.LBRACE);
     while (peekTokenIs(TokenType.VAR)) {
       parseVarDec();
     }
+    vmWriter.writeFunction(functionName, symbolTable.varCount(Kind.VAR));
     parseStatements();
     expectPeek(TokenType.RBRACE);
     printNonTerminal("/subroutineBody");

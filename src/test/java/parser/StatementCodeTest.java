@@ -95,6 +95,7 @@ class StatementCodeTest {
         """);
     p.parse();
     assertEquals(vm(
+        "function Main.a 0",
         "push constant 0",
         "not",
         "if-goto IF_TRUE0",
@@ -105,6 +106,7 @@ class StatementCodeTest {
         "label IF_FALSE0",
         "push constant 0",
         "return",
+        "function Main.b 0",
         "push constant 0",
         "if-goto IF_TRUE0",
         "goto IF_FALSE0",
@@ -185,6 +187,7 @@ class StatementCodeTest {
         """);
     p.parse();
     assertEquals(vm(
+        "function Main.a 0",
         "label WHILE_EXP0",
         "push constant 0",
         "not",
@@ -195,6 +198,7 @@ class StatementCodeTest {
         "label WHILE_END0",
         "push constant 0",
         "return",
+        "function Main.b 0",
         "label WHILE_EXP0",
         "push constant 0",
         "not",
