@@ -210,4 +210,38 @@ class StatementCodeTest {
         "push constant 0",
         "return"), p.vmOutput());
   }
+
+  @Test
+  void doDiscardsReturnValue() {
+    Parser p = parser("do Output.printInt(1);");
+    p.parseDo();
+    assertEquals(vm(
+        "push constant 1",
+        "call Output.printInt 1",
+        "pop temp 0"), p.vmOutput());
+  }
+
+  @Test
+  void sevenFromBook() {
+    Parser p = parser("""
+        class Main {
+          function void main() {
+            do Output.printInt(1 + (2 * 3));
+            return;
+          }
+        }
+        """);
+    p.parse();
+    assertEquals(vm(
+        "function Main.main 0",
+        "push constant 1",
+        "push constant 2",
+        "push constant 3",
+        "call Math.multiply 2",
+        "add",
+        "call Output.printInt 1",
+        "pop temp 0",
+        "push constant 0",
+        "return"), p.vmOutput());
+  }
 }
