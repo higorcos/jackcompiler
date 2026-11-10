@@ -20,6 +20,7 @@ public class Parser {
   private int level;
   private String className;
   private int ifLabelNum;
+  private int whileLabelNum;
 
   public Parser(byte[] input) {
     scan = new Scanner(input);
@@ -257,13 +258,26 @@ public class Parser {
 
   void parseWhile() {
     printNonTerminal("whileStatement");
+    String labelExp = "WHILE_EXP" + whileLabelNum;
+    String labelEnd = "WHILE_END" + whileLabelNum;
+    whileLabelNum++;
+
+    vmWriter.writeLabel(labelExp);
+
     expectPeek(TokenType.WHILE);
     expectPeek(TokenType.LPAREN);
     parseExpression();
     expectPeek(TokenType.RPAREN);
+
+    vmWriter.writeArithmetic(Command.NOT);
+    vmWriter.writeIf(labelEnd);
+
     expectPeek(TokenType.LBRACE);
     parseStatements();
     expectPeek(TokenType.RBRACE);
+
+    vmWriter.writeGoto(labelExp);
+    vmWriter.writeLabel(labelEnd);
     printNonTerminal("/whileStatement");
   }
 
@@ -352,6 +366,7 @@ public class Parser {
     printNonTerminal("subroutineDec");
     symbolTable.startSubroutine();
     ifLabelNum = 0;
+    whileLabelNum = 0;
     expectPeek(TokenType.CONSTRUCTOR, TokenType.FUNCTION, TokenType.METHOD);
     if (currentToken.type == TokenType.METHOD) {
       symbolTable.define("this", className, Kind.ARG);

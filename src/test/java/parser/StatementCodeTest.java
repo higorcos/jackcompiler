@@ -115,4 +115,95 @@ class StatementCodeTest {
         "push constant 0",
         "return"), p.vmOutput());
   }
+
+  @Test
+  void whileLoop() {
+    Parser p = parser("while (true) { return 1; }");
+    p.parseWhile();
+    assertEquals(vm(
+        "label WHILE_EXP0",
+        "push constant 0",
+        "not",
+        "not",
+        "if-goto WHILE_END0",
+        "push constant 1",
+        "return",
+        "goto WHILE_EXP0",
+        "label WHILE_END0"), p.vmOutput());
+  }
+
+  @Test
+  void nestedWhilesGetUniqueLabels() {
+    Parser p = parser("while (false) { while (true) { return; } }");
+    p.parseWhile();
+    assertEquals(vm(
+        "label WHILE_EXP0",
+        "push constant 0",
+        "not",
+        "if-goto WHILE_END0",
+        "label WHILE_EXP1",
+        "push constant 0",
+        "not",
+        "not",
+        "if-goto WHILE_END1",
+        "push constant 0",
+        "return",
+        "goto WHILE_EXP1",
+        "label WHILE_END1",
+        "goto WHILE_EXP0",
+        "label WHILE_END0"), p.vmOutput());
+  }
+
+  @Test
+  void whileInsideIfUsesSeparateCounters() {
+    Parser p = parser("if (true) { while (false) { return; } }");
+    p.parseIf();
+    assertEquals(vm(
+        "push constant 0",
+        "not",
+        "if-goto IF_TRUE0",
+        "goto IF_FALSE0",
+        "label IF_TRUE0",
+        "label WHILE_EXP0",
+        "push constant 0",
+        "not",
+        "if-goto WHILE_END0",
+        "push constant 0",
+        "return",
+        "goto WHILE_EXP0",
+        "label WHILE_END0",
+        "label IF_FALSE0"), p.vmOutput());
+  }
+
+  @Test
+  void whileLabelsRestartInEachSubroutine() {
+    Parser p = parser("""
+        class Main {
+          function void a() { while (false) { return; } return; }
+          function void b() { while (false) { return; } return; }
+        }
+        """);
+    p.parse();
+    assertEquals(vm(
+        "label WHILE_EXP0",
+        "push constant 0",
+        "not",
+        "if-goto WHILE_END0",
+        "push constant 0",
+        "return",
+        "goto WHILE_EXP0",
+        "label WHILE_END0",
+        "push constant 0",
+        "return",
+        "label WHILE_EXP0",
+        "push constant 0",
+        "not",
+        "if-goto WHILE_END0",
+        "push constant 0",
+        "return",
+        "goto WHILE_EXP0",
+        "label WHILE_END0",
+        "push constant 0",
+        "return"), p.vmOutput());
+  }
 }
