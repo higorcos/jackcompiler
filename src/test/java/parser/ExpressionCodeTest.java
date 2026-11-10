@@ -44,4 +44,28 @@ class ExpressionCodeTest {
     p.parseExpression();
     assertEquals(vm("push pointer 0"), p.vmOutput());
   }
+
+  @Test
+  void stringConstant() {
+    Parser p = parser("\"ola\";");
+    p.parseExpression();
+    assertEquals(vm(
+        "push constant 3",
+        "call String.new 1",
+        "push constant 111",
+        "call String.appendChar 2",
+        "push constant 108",
+        "call String.appendChar 2",
+        "push constant 97",
+        "call String.appendChar 2"), p.vmOutput());
+  }
+
+  @Test
+  void emptyStringConstant() {
+    Parser p = parser("\"\";");
+    p.parseExpression();
+    assertEquals(vm(
+        "push constant 0",
+        "call String.new 1"), p.vmOutput());
+  }
 }

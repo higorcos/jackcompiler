@@ -75,7 +75,16 @@ public class Parser {
         expectPeek(TokenType.NUMBER);
         vmWriter.writePush(Segment.CONST, Integer.parseInt(currentToken.lexeme));
       }
-      case STRING -> expectPeek(TokenType.STRING);
+      case STRING -> {
+        expectPeek(TokenType.STRING);
+        String text = currentToken.lexeme;
+        vmWriter.writePush(Segment.CONST, text.length());
+        vmWriter.writeCall("String.new", 1);
+        for (int i = 0; i < text.length(); i++) {
+          vmWriter.writePush(Segment.CONST, text.charAt(i));
+          vmWriter.writeCall("String.appendChar", 2);
+        }
+      }
       case FALSE, NULL, TRUE -> {
         expectPeek(TokenType.FALSE, TokenType.NULL, TokenType.TRUE);
         vmWriter.writePush(Segment.CONST, 0);
