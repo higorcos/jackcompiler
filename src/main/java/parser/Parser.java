@@ -3,6 +3,7 @@ package parser;
 import codegen.SymbolTable;
 import codegen.SymbolTable.Kind;
 import codegen.VMWriter;
+import codegen.VMWriter.Command;
 import codegen.VMWriter.Segment;
 import java.util.Arrays;
 import lexer.Scanner;
@@ -75,8 +76,17 @@ public class Parser {
         vmWriter.writePush(Segment.CONST, Integer.parseInt(currentToken.lexeme));
       }
       case STRING -> expectPeek(TokenType.STRING);
-      case FALSE, NULL, TRUE -> expectPeek(TokenType.FALSE, TokenType.NULL, TokenType.TRUE);
-      case THIS -> expectPeek(TokenType.THIS);
+      case FALSE, NULL, TRUE -> {
+        expectPeek(TokenType.FALSE, TokenType.NULL, TokenType.TRUE);
+        vmWriter.writePush(Segment.CONST, 0);
+        if (currentToken.type == TokenType.TRUE) {
+          vmWriter.writeArithmetic(Command.NOT);
+        }
+      }
+      case THIS -> {
+        expectPeek(TokenType.THIS);
+        vmWriter.writePush(Segment.POINTER, 0);
+      }
       case IDENT -> {
         expectPeek(TokenType.IDENT);
         if (peekTokenIs(TokenType.LBRACKET)) {
