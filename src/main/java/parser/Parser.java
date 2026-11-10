@@ -19,6 +19,7 @@ public class Parser {
   private Token peekToken;
   private int level;
   private String className;
+  private int ifLabelNum;
 
   public Parser(byte[] input) {
     scan = new Scanner(input);
@@ -220,19 +221,35 @@ public class Parser {
 
   void parseIf() {
     printNonTerminal("ifStatement");
+    String labelTrue = "IF_TRUE" + ifLabelNum;
+    String labelFalse = "IF_FALSE" + ifLabelNum;
+    String labelEnd = "IF_END" + ifLabelNum;
+    ifLabelNum++;
+
     expectPeek(TokenType.IF);
     expectPeek(TokenType.LPAREN);
     parseExpression();
     expectPeek(TokenType.RPAREN);
+
+    vmWriter.writeIf(labelTrue);
+    vmWriter.writeGoto(labelFalse);
+    vmWriter.writeLabel(labelTrue);
+
     expectPeek(TokenType.LBRACE);
     parseStatements();
     expectPeek(TokenType.RBRACE);
+
+    if (peekTokenIs(TokenType.ELSE)) {
+      vmWriter.writeGoto(labelEnd);
+    }
+    vmWriter.writeLabel(labelFalse);
 
     if (peekTokenIs(TokenType.ELSE)) {
       expectPeek(TokenType.ELSE);
       expectPeek(TokenType.LBRACE);
       parseStatements();
       expectPeek(TokenType.RBRACE);
+      vmWriter.writeLabel(labelEnd);
     }
 
     printNonTerminal("/ifStatement");
@@ -334,6 +351,7 @@ public class Parser {
   void parseSubroutine() {
     printNonTerminal("subroutineDec");
     symbolTable.startSubroutine();
+    ifLabelNum = 0;
     expectPeek(TokenType.CONSTRUCTOR, TokenType.FUNCTION, TokenType.METHOD);
     if (currentToken.type == TokenType.METHOD) {
       symbolTable.define("this", className, Kind.ARG);
