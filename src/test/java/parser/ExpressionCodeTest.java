@@ -68,4 +68,58 @@ class ExpressionCodeTest {
         "push constant 0",
         "call String.new 1"), p.vmOutput());
   }
+
+  @Test
+  void binaryPlus() {
+    Parser p = parser("1 + 2;");
+    p.parseExpression();
+    assertEquals(vm(
+        "push constant 1",
+        "push constant 2",
+        "add"), p.vmOutput());
+  }
+
+  @Test
+  void binaryOperatorsAreLeftToRight() {
+    Parser p = parser("1 + 2 * 3;");
+    p.parseExpression();
+    assertEquals(vm(
+        "push constant 1",
+        "push constant 2",
+        "add",
+        "push constant 3",
+        "call Math.multiply 2"), p.vmOutput());
+  }
+
+  @Test
+  void multiplyAndDivideCallMath() {
+    Parser p = parser("6 * 2 / 3;");
+    p.parseExpression();
+    assertEquals(vm(
+        "push constant 6",
+        "push constant 2",
+        "call Math.multiply 2",
+        "push constant 3",
+        "call Math.divide 2"), p.vmOutput());
+  }
+
+  @Test
+  void comparisonAndLogicOperators() {
+    Parser p = parser("1 - 2 & 3 | 4 < 5 > 6 = 7;");
+    p.parseExpression();
+    assertEquals(vm(
+        "push constant 1",
+        "push constant 2",
+        "sub",
+        "push constant 3",
+        "and",
+        "push constant 4",
+        "or",
+        "push constant 5",
+        "lt",
+        "push constant 6",
+        "gt",
+        "push constant 7",
+        "eq"), p.vmOutput());
+  }
 }

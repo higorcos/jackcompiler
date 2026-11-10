@@ -131,10 +131,27 @@ public class Parser {
     printNonTerminal("expression");
     parseTerm();
     while (isOperator(peekToken.type)) {
-      expectPeek(peekToken.type);
+      TokenType op = peekToken.type;
+      expectPeek(op);
       parseTerm();
+      compileOperator(op);
     }
     printNonTerminal("/expression");
+  }
+
+  private void compileOperator(TokenType op) {
+    switch (op) {
+      case ASTERISK -> vmWriter.writeCall("Math.multiply", 2);
+      case SLASH -> vmWriter.writeCall("Math.divide", 2);
+      case PLUS -> vmWriter.writeArithmetic(Command.ADD);
+      case MINUS -> vmWriter.writeArithmetic(Command.SUB);
+      case LT -> vmWriter.writeArithmetic(Command.LT);
+      case GT -> vmWriter.writeArithmetic(Command.GT);
+      case EQ -> vmWriter.writeArithmetic(Command.EQ);
+      case AND -> vmWriter.writeArithmetic(Command.AND);
+      case OR -> vmWriter.writeArithmetic(Command.OR);
+      default -> throw error(currentToken, "expected operator");
+    }
   }
 
   void parseExpressionList() {
