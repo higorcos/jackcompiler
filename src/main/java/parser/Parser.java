@@ -113,7 +113,9 @@ public class Parser {
       }
       case MINUS, NOT -> {
         expectPeek(TokenType.MINUS, TokenType.NOT);
+        TokenType op = currentToken.type;
         parseTerm();
+        vmWriter.writeArithmetic(op == TokenType.MINUS ? Command.NEG : Command.NOT);
       }
       default -> throw error(peekToken, "expected term");
     }

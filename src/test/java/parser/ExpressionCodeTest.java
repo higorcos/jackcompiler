@@ -122,4 +122,45 @@ class ExpressionCodeTest {
         "push constant 7",
         "eq"), p.vmOutput());
   }
+
+  @Test
+  void unaryMinus() {
+    Parser p = parser("-5;");
+    p.parseExpression();
+    assertEquals(vm(
+        "push constant 5",
+        "neg"), p.vmOutput());
+  }
+
+  @Test
+  void unaryNot() {
+    Parser p = parser("~0;");
+    p.parseExpression();
+    assertEquals(vm(
+        "push constant 0",
+        "not"), p.vmOutput());
+  }
+
+  @Test
+  void binaryAndUnaryMinus() {
+    Parser p = parser("1 - -2;");
+    p.parseExpression();
+    assertEquals(vm(
+        "push constant 1",
+        "push constant 2",
+        "neg",
+        "sub"), p.vmOutput());
+  }
+
+  @Test
+  void parenthesesAreCompiledFirst() {
+    Parser p = parser("1 + (2 * 3);");
+    p.parseExpression();
+    assertEquals(vm(
+        "push constant 1",
+        "push constant 2",
+        "push constant 3",
+        "call Math.multiply 2",
+        "add"), p.vmOutput());
+  }
 }
