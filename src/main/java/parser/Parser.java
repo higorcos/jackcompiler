@@ -2,6 +2,8 @@ package parser;
 
 import codegen.SymbolTable;
 import codegen.SymbolTable.Kind;
+import codegen.VMWriter;
+import codegen.VMWriter.Segment;
 import java.util.Arrays;
 import lexer.Scanner;
 import lexer.Token;
@@ -11,6 +13,7 @@ public class Parser {
   private final Scanner scan;
   private final StringBuilder xml = new StringBuilder();
   private final SymbolTable symbolTable = new SymbolTable();
+  private final VMWriter vmWriter = new VMWriter();
   private Token currentToken;
   private Token peekToken;
   private int level;
@@ -67,7 +70,10 @@ public class Parser {
   void parseTerm() {
     printNonTerminal("term");
     switch (peekToken.type) {
-      case NUMBER -> expectPeek(TokenType.NUMBER);
+      case NUMBER -> {
+        expectPeek(TokenType.NUMBER);
+        vmWriter.writePush(Segment.CONST, Integer.parseInt(currentToken.lexeme));
+      }
       case STRING -> expectPeek(TokenType.STRING);
       case FALSE, NULL, TRUE -> expectPeek(TokenType.FALSE, TokenType.NULL, TokenType.TRUE);
       case THIS -> expectPeek(TokenType.THIS);
@@ -352,5 +358,9 @@ public class Parser {
 
   public String xmlOutput() {
     return xml.toString();
+  }
+
+  public String vmOutput() {
+    return vmWriter.output();
   }
 }

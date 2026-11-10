@@ -14,4 +14,8 @@ final class ParserTestSupport {
   static String xml(String... lines) {
     return String.join("\r\n", lines) + "\r\n";
   }
+
+  static String vm(String... lines) {
+    return String.join("\n", lines) + "\n";
+  }
 }
