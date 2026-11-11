@@ -121,8 +121,8 @@ public class Parser {
         if (peekTokenIs(TokenType.LBRACKET)) {
           Symbol symbol = resolveVariable(currentToken);
           expectPeek(TokenType.LBRACKET);
-          vmWriter.writePush(kind2Segment(symbol.kind()), symbol.index());
           parseExpression();
+          vmWriter.writePush(kind2Segment(symbol.kind()), symbol.index());
           vmWriter.writeArithmetic(Command.ADD);
           expectPeek(TokenType.RBRACKET);
           vmWriter.writePop(Segment.POINTER, 1);
@@ -209,8 +209,8 @@ public class Parser {
 
     if (peekTokenIs(TokenType.LBRACKET)) {
       expectPeek(TokenType.LBRACKET);
-      vmWriter.writePush(kind2Segment(symbol.kind()), symbol.index());
       parseExpression();
+      vmWriter.writePush(kind2Segment(symbol.kind()), symbol.index());
       vmWriter.writeArithmetic(Command.ADD);
       expectPeek(TokenType.RBRACKET);
       isArray = true;

@@ -25,8 +25,8 @@ class ArrayCodeTest {
     Parser p = parserWithArrays("let a[2] = 5;");
     p.parseLet();
     assertEquals(vm(
-        "push local 0",
         "push constant 2",
+        "push local 0",
         "add",
         "push constant 5",
         "pop temp 0",
@@ -40,10 +40,10 @@ class ArrayCodeTest {
     Parser p = parserWithArrays("let arr[i + 1] = i;");
     p.parseLet();
     assertEquals(vm(
-        "push this 0",
         "push local 1",
         "push constant 1",
         "add",
+        "push this 0",
         "add",
         "push local 1",
         "pop temp 0",
@@ -57,8 +57,8 @@ class ArrayCodeTest {
     Parser p = parserWithArrays("a[2];");
     p.parseExpression();
     assertEquals(vm(
-        "push local 0",
         "push constant 2",
+        "push local 0",
         "add",
         "pop pointer 1",
         "push that 0"), p.vmOutput());
@@ -69,11 +69,11 @@ class ArrayCodeTest {
     Parser p = parserWithArrays("let a[i] = arr[i];");
     p.parseLet();
     assertEquals(vm(
+        "push local 1",
         "push local 0",
-        "push local 1",
         "add",
-        "push this 0",
         "push local 1",
+        "push this 0",
         "add",
         "pop pointer 1",
         "push that 0",
