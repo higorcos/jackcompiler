@@ -1,6 +1,7 @@
 package parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static parser.ParserTestSupport.parser;
 import static parser.ParserTestSupport.vm;
 
@@ -49,5 +50,43 @@ class ArrayCodeTest {
         "pop pointer 1",
         "push temp 0",
         "pop that 0"), p.vmOutput());
+  }
+
+  @Test
+  void readArrayElement() {
+    Parser p = parserWithArrays("a[2];");
+    p.parseExpression();
+    assertEquals(vm(
+        "push local 0",
+        "push constant 2",
+        "add",
+        "pop pointer 1",
+        "push that 0"), p.vmOutput());
+  }
+
+  @Test
+  void copyBetweenArrays() {
+    Parser p = parserWithArrays("let a[i] = arr[i];");
+    p.parseLet();
+    assertEquals(vm(
+        "push local 0",
+        "push local 1",
+        "add",
+        "push this 0",
+        "push local 1",
+        "add",
+        "pop pointer 1",
+        "push that 0",
+        "pop temp 0",
+        "pop pointer 1",
+        "push temp 0",
+        "pop that 0"), p.vmOutput());
+  }
+
+  @Test
+  void undeclaredArray() {
+    Parser p = parser("b[1];");
+    SemanticException e = assertThrows(SemanticException.class, p::parseExpression);
+    assertEquals("line 1, column 1: undeclared variable 'b'", e.getMessage());
   }
 }

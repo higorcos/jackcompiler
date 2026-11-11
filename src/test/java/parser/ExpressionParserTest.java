@@ -69,7 +69,7 @@ class ExpressionParserTest {
 
   @Test
   void termArrayAccess() {
-    Parser p = parser("a[2];");
+    Parser p = parserWithVars("a[2];", "a");
     p.parseTerm();
     assertEquals(xml(
         "<term>",

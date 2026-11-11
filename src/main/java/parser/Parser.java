@@ -119,9 +119,14 @@ public class Parser {
       case IDENT -> {
         expectPeek(TokenType.IDENT);
         if (peekTokenIs(TokenType.LBRACKET)) {
+          Symbol symbol = resolveVariable(currentToken);
           expectPeek(TokenType.LBRACKET);
+          vmWriter.writePush(kind2Segment(symbol.kind()), symbol.index());
           parseExpression();
+          vmWriter.writeArithmetic(Command.ADD);
           expectPeek(TokenType.RBRACKET);
+          vmWriter.writePop(Segment.POINTER, 1);
+          vmWriter.writePush(Segment.THAT, 0);
         } else if (peekTokenIs(TokenType.LPAREN) || peekTokenIs(TokenType.DOT)) {
           parseSubroutineCall();
         } else {
