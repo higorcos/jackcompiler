@@ -186,4 +186,75 @@ class SubroutineCodeTest {
         "push constant 0",
         "return"), p.vmOutput());
   }
+
+  @Test
+  void methodCallOnField() {
+    Parser p = parser("""
+        class Game {
+          field Square square;
+          method void run() { do square.moveUp(); return; }
+        }
+        """);
+    p.parse();
+    assertEquals(vm(
+        "function Game.run 0",
+        "push argument 0",
+        "pop pointer 0",
+        "push this 0",
+        "call Square.moveUp 1",
+        "pop temp 0",
+        "push constant 0",
+        "return"), p.vmOutput());
+  }
+
+  @Test
+  void methodCallOnLocalWithArguments() {
+    Parser p = parser("""
+        class Main {
+          function int f() {
+            var Point p;
+            let p = Point.new(1, 2);
+            return p.plus(3, 4);
+          }
+        }
+        """);
+    p.parse();
+    assertEquals(vm(
+        "function Main.f 1",
+        "push constant 1",
+        "push constant 2",
+        "call Point.new 2",
+        "pop local 0",
+        "push local 0",
+        "push constant 3",
+        "push constant 4",
+        "call Point.plus 3",
+        "return"), p.vmOutput());
+  }
+
+  @Test
+  void methodCallOnCurrentObject() {
+    Parser p = parser("""
+        class Game {
+          method void run() { do draw(1); return; }
+          method void draw(int n) { return; }
+        }
+        """);
+    p.parse();
+    assertEquals(vm(
+        "function Game.run 0",
+        "push argument 0",
+        "pop pointer 0",
+        "push pointer 0",
+        "push constant 1",
+        "call Game.draw 2",
+        "pop temp 0",
+        "push constant 0",
+        "return",
+        "function Game.draw 0",
+        "push argument 0",
+        "pop pointer 0",
+        "push constant 0",
+        "return"), p.vmOutput());
+  }
 }

@@ -219,15 +219,29 @@ public class Parser {
   }
 
   void parseSubroutineCall() {
-    String functionName = currentToken.lexeme;
+    String ident = currentToken.lexeme;
+    Symbol symbol = symbolTable.resolve(ident);
+    String functionName;
+    int nArgs = 0;
+
     if (peekTokenIs(TokenType.DOT)) {
       expectPeek(TokenType.DOT);
       expectPeek(TokenType.IDENT);
-      functionName = functionName + "." + currentToken.lexeme;
+      if (symbol != null) {
+        functionName = symbol.type() + "." + currentToken.lexeme;
+        vmWriter.writePush(kind2Segment(symbol.kind()), symbol.index());
+        nArgs = 1;
+      } else {
+        functionName = ident + "." + currentToken.lexeme;
+      }
+    } else {
+      functionName = className + "." + ident;
+      vmWriter.writePush(Segment.POINTER, 0);
+      nArgs = 1;
     }
 
     expectPeek(TokenType.LPAREN);
-    int nArgs = parseExpressionList();
+    nArgs += parseExpressionList();
     expectPeek(TokenType.RPAREN);
     vmWriter.writeCall(functionName, nArgs);
   }
