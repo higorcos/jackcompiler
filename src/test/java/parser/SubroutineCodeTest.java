@@ -130,4 +130,35 @@ class SubroutineCodeTest {
         "push constant 3",
         "call Math.max 2"), p.vmOutput());
   }
+
+  @Test
+  void constructorAllocatesFieldsAndAnchorsThis() {
+    Parser p = parser("""
+        class Point {
+          field int x, y;
+          static int count;
+          constructor Point new(int ax, int ay) {
+            let x = ax;
+            let y = ay;
+            return this;
+          }
+          function int zero() { return 0; }
+        }
+        """);
+    p.parse();
+    assertEquals(vm(
+        "function Point.new 0",
+        "push constant 2",
+        "call Memory.alloc 1",
+        "pop pointer 0",
+        "push argument 0",
+        "pop this 0",
+        "push argument 1",
+        "pop this 1",
+        "push pointer 0",
+        "return",
+        "function Point.zero 0",
+        "push constant 0",
+        "return"), p.vmOutput());
+  }
 }

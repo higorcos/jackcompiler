@@ -428,6 +428,11 @@ public class Parser {
       parseVarDec();
     }
     vmWriter.writeFunction(functionName, symbolTable.varCount(Kind.VAR));
+    if (subroutineType == TokenType.CONSTRUCTOR) {
+      vmWriter.writePush(Segment.CONST, symbolTable.varCount(Kind.FIELD));
+      vmWriter.writeCall("Memory.alloc", 1);
+      vmWriter.writePop(Segment.POINTER, 0);
+    }
     parseStatements();
     expectPeek(TokenType.RBRACE);
     printNonTerminal("/subroutineBody");
