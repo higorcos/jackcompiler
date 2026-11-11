@@ -1,5 +1,5 @@
 #!/bin/bash
-# Compila o projeto, compara as saidas XML com as oficiais e confere que os programas do Project 11 geram .vm.
+# Compila o projeto, compara as saidas XML com as oficiais e os .vm do Project 11 com os gerados pelo JackCompiler oficial.
 set -e
 
 javac -sourcepath src/main/java -d bin src/main/java/Main.java
@@ -28,13 +28,15 @@ check() {
 }
 
 check_vm() {
-  local missing=0
+  local differ=0
   for jack in "output/vm/$1"/*.jack; do
-    if [ ! -s "${jack%.jack}.vm" ]; then
-      missing=1
+    local name
+    name=$(basename "${jack%.jack}")
+    if ! diff --strip-trailing-cr -q "output/vm/$1/$name.vm" "src/test/resources/expected/vm/$1/$name.vm" > /dev/null 2>&1; then
+      differ=1
     fi
   done
-  if [ $missing -eq 0 ]; then
+  if [ $differ -eq 0 ]; then
     echo "OK   vm/$1"
   else
     echo "FAIL vm/$1"

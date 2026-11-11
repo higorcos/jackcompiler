@@ -2,6 +2,7 @@ bin/
 out/
 *.class
 *.vm
+!src/test/resources/expected/vm/**/*.vm
 
 .vscode/
 .classpath
