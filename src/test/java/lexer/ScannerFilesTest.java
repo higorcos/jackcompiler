@@ -27,7 +27,14 @@ class ScannerFilesTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"Square, Main", "Square, Square", "Square, SquareGame"})
+  @CsvSource({
+      "ExpressionLessSquare, Main",
+      "ExpressionLessSquare, Square",
+      "ExpressionLessSquare, SquareGame",
+      "Square, Main",
+      "Square, Square",
+      "Square, SquareGame"
+  })
   void matchesOfficialXml(String program, String name) throws IOException {
     String output = TokenXml.of(resource("input/project10/" + program + "/" + name + ".jack"));
     String expected = new String(resource("expected/lexer/" + program + "/" + name + "T.xml"), StandardCharsets.UTF_8);

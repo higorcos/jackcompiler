@@ -27,7 +27,14 @@ class ParserFilesTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"Square, Main", "Square, Square", "Square, SquareGame"})
+  @CsvSource({
+      "ExpressionLessSquare, Main",
+      "ExpressionLessSquare, Square",
+      "ExpressionLessSquare, SquareGame",
+      "Square, Main",
+      "Square, Square",
+      "Square, SquareGame"
+  })
   void matchesOfficialXml(String program, String name) throws IOException {
     Parser p = new Parser(resource("input/project10/" + program + "/" + name + ".jack"));
     p.parse();
