@@ -14,9 +14,7 @@ for dir in src/test/resources/input/project11/*/; do
   rm -rf "output/vm/$program"
   mkdir -p "output/vm/$program"
   cp "$dir"*.jack "output/vm/$program/"
-  for jack in "output/vm/$program"/*.jack; do
-    java -cp bin Main "$jack" > /dev/null
-  done
+  java -cp bin Main "output/vm/$program" > /dev/null
 done
 
 fail=0
