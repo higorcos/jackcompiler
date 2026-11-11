@@ -3,6 +3,7 @@ out/
 *.class
 *.vm
 !src/test/resources/expected/vm/**/*.vm
+src/test/resources/input/**/*.xml
 
 .vscode/
 .classpath

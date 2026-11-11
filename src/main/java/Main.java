@@ -83,10 +83,7 @@ public class Main {
   }
 
   private static Path defaultXmlOutput(Path source, boolean tokenMode) {
-    String name = baseName(source);
-    return tokenMode
-        ? Paths.get("output", "lexer", name + "T.xml")
-        : Paths.get("output", "parser", name + ".xml");
+    return source.resolveSibling(baseName(source) + (tokenMode ? "T.xml" : "P.xml"));
   }
 
   private static Path vmOutput(Path source) {

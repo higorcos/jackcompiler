@@ -6,11 +6,11 @@ javac -sourcepath src/main/java -d bin src/main/java/Main.java
 
 for dir in src/test/resources/input/project10/*/; do
   program=$(basename "$dir")
-  for jack in "$dir"*.jack; do
-    name=$(basename "${jack%.jack}")
-    java -cp bin Main --tokens "$jack" "output/lexer/$program/${name}T.xml" > /dev/null
-    java -cp bin Main --xml "$jack" "output/parser/$program/$name.xml" > /dev/null
-  done
+  rm -rf "output/xml/$program"
+  mkdir -p "output/xml/$program"
+  cp "$dir"*.jack "output/xml/$program/"
+  java -cp bin Main --tokens "output/xml/$program" > /dev/null
+  java -cp bin Main --xml "output/xml/$program" > /dev/null
 done
 
 for dir in src/test/resources/input/project11/*/; do
@@ -23,10 +23,10 @@ done
 
 fail=0
 check() {
-  if diff --strip-trailing-cr -q "output/$1" "src/test/resources/expected/$1" > /dev/null; then
-    echo "OK   $1"
+  if diff --strip-trailing-cr -q "$1" "src/test/resources/expected/$2" > /dev/null; then
+    echo "OK   $2"
   else
-    echo "FAIL $1"
+    echo "FAIL $2"
     fail=1
   fi
 }
@@ -51,13 +51,15 @@ check_vm() {
 for dir in src/test/resources/input/project10/*/; do
   program=$(basename "$dir")
   for jack in "$dir"*.jack; do
-    check "lexer/$program/$(basename "${jack%.jack}")T.xml"
+    name=$(basename "${jack%.jack}")
+    check "output/xml/$program/${name}T.xml" "lexer/$program/${name}T.xml"
   done
 done
 for dir in src/test/resources/input/project10/*/; do
   program=$(basename "$dir")
   for jack in "$dir"*.jack; do
-    check "parser/$program/$(basename "${jack%.jack}").xml"
+    name=$(basename "${jack%.jack}")
+    check "output/xml/$program/${name}P.xml" "parser/$program/$name.xml"
   done
 done
 for dir in src/test/resources/input/project11/*/; do
