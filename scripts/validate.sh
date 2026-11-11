@@ -22,47 +22,46 @@ for dir in src/test/resources/input/project11/*/; do
 done
 
 fail=0
-check() {
-  if diff --strip-trailing-cr -q "$1" "src/test/resources/expected/$2" > /dev/null; then
-    echo "OK   $2"
-  else
-    echo "FAIL $2"
-    fail=1
-  fi
+same() {
+  diff --strip-trailing-cr -q "$1" "$2" > /dev/null 2>&1
 }
 
-check_vm() {
-  local differ=0
-  for jack in "output/vm/$1"/*.jack; do
-    local name
-    name=$(basename "${jack%.jack}")
-    if ! diff --strip-trailing-cr -q "output/vm/$1/$name.vm" "src/test/resources/expected/vm/$1/$name.vm" > /dev/null 2>&1; then
-      differ=1
-    fi
-  done
-  if [ $differ -eq 0 ]; then
-    echo "OK   vm/$1"
+report() {
+  if [ "$2" -eq 0 ]; then
+    echo "OK   $1"
   else
-    echo "FAIL vm/$1"
+    echo "FAIL $1"
     fail=1
   fi
 }
 
 for dir in src/test/resources/input/project10/*/; do
   program=$(basename "$dir")
+  differ=0
   for jack in "$dir"*.jack; do
     name=$(basename "${jack%.jack}")
-    check "output/xml/$program/${name}T.xml" "lexer/$program/${name}T.xml"
+    same "output/xml/$program/${name}T.xml" "src/test/resources/expected/lexer/$program/${name}T.xml" || differ=1
   done
+  report "lexer/$program" $differ
 done
+echo
 for dir in src/test/resources/input/project10/*/; do
   program=$(basename "$dir")
+  differ=0
   for jack in "$dir"*.jack; do
     name=$(basename "${jack%.jack}")
-    check "output/xml/$program/${name}P.xml" "parser/$program/$name.xml"
+    same "output/xml/$program/${name}P.xml" "src/test/resources/expected/parser/$program/$name.xml" || differ=1
   done
+  report "parser/$program" $differ
 done
+echo
 for dir in src/test/resources/input/project11/*/; do
-  check_vm "$(basename "$dir")"
+  program=$(basename "$dir")
+  differ=0
+  for jack in "$dir"*.jack; do
+    name=$(basename "${jack%.jack}")
+    same "output/vm/$program/$name.vm" "src/test/resources/expected/vm/$program/$name.vm" || differ=1
+  done
+  report "vm/$program" $differ
 done
 exit $fail
