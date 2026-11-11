@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class ParserFilesTest {
 
@@ -27,11 +27,11 @@ class ParserFilesTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"Main", "Square", "SquareGame"})
-  void matchesOfficialXml(String name) throws IOException {
-    Parser p = new Parser(resource("input/" + name + ".jack"));
+  @CsvSource({"Square, Main", "Square, Square", "Square, SquareGame"})
+  void matchesOfficialXml(String program, String name) throws IOException {
+    Parser p = new Parser(resource("input/project10/" + program + "/" + name + ".jack"));
     p.parse();
-    String expected = new String(resource("expected/parser/" + name + ".xml"), StandardCharsets.UTF_8);
+    String expected = new String(resource("expected/parser/" + program + "/" + name + ".xml"), StandardCharsets.UTF_8);
     assertEquals(normalizeXml(expected), normalizeXml(p.xmlOutput()));
   }
 }

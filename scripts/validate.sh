@@ -1,12 +1,16 @@
 #!/bin/bash
-# Compila o projeto, compara as saidas XML com as oficiais e os .vm do Project 11 com os gerados pelo JackCompiler oficial.
+# Compila o projeto, compara os XML gerados para o Project 10 com os oficiais e os .vm gerados para o Project 11 com os do JackCompiler oficial.
 set -e
 
 javac -sourcepath src/main/java -d bin src/main/java/Main.java
 
-for name in Main Square SquareGame; do
-  java -cp bin Main --tokens src/test/resources/input/$name.jack > /dev/null
-  java -cp bin Main --xml src/test/resources/input/$name.jack > /dev/null
+for dir in src/test/resources/input/project10/*/; do
+  program=$(basename "$dir")
+  for jack in "$dir"*.jack; do
+    name=$(basename "${jack%.jack}")
+    java -cp bin Main --tokens "$jack" "output/lexer/$program/${name}T.xml" > /dev/null
+    java -cp bin Main --xml "$jack" "output/parser/$program/$name.xml" > /dev/null
+  done
 done
 
 for dir in src/test/resources/input/project11/*/; do
@@ -44,11 +48,17 @@ check_vm() {
   fi
 }
 
-for name in Main Square SquareGame; do
-  check "lexer/${name}T.xml"
+for dir in src/test/resources/input/project10/*/; do
+  program=$(basename "$dir")
+  for jack in "$dir"*.jack; do
+    check "lexer/$program/$(basename "${jack%.jack}")T.xml"
+  done
 done
-for name in Main Square SquareGame; do
-  check "parser/$name.xml"
+for dir in src/test/resources/input/project10/*/; do
+  program=$(basename "$dir")
+  for jack in "$dir"*.jack; do
+    check "parser/$program/$(basename "${jack%.jack}").xml"
+  done
 done
 for dir in src/test/resources/input/project11/*/; do
   check_vm "$(basename "$dir")"
