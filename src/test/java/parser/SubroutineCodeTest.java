@@ -161,4 +161,29 @@ class SubroutineCodeTest {
         "push constant 0",
         "return"), p.vmOutput());
   }
+
+  @Test
+  void methodAnchorsThisInFirstArgument() {
+    Parser p = parser("""
+        class Point {
+          field int x;
+          method int getx() { return x; }
+          method void setx(int v) { let x = v; return; }
+        }
+        """);
+    p.parse();
+    assertEquals(vm(
+        "function Point.getx 0",
+        "push argument 0",
+        "pop pointer 0",
+        "push this 0",
+        "return",
+        "function Point.setx 0",
+        "push argument 0",
+        "pop pointer 0",
+        "push argument 1",
+        "pop this 0",
+        "push constant 0",
+        "return"), p.vmOutput());
+  }
 }
