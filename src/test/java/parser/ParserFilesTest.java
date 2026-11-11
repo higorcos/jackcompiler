@@ -28,6 +28,7 @@ class ParserFilesTest {
 
   @ParameterizedTest
   @CsvSource({
+      "ArrayTest, Main",
       "ExpressionLessSquare, Main",
       "ExpressionLessSquare, Square",
       "ExpressionLessSquare, SquareGame",
