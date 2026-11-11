@@ -204,14 +204,21 @@ public class Parser {
 
     if (peekTokenIs(TokenType.LBRACKET)) {
       expectPeek(TokenType.LBRACKET);
+      vmWriter.writePush(kind2Segment(symbol.kind()), symbol.index());
       parseExpression();
+      vmWriter.writeArithmetic(Command.ADD);
       expectPeek(TokenType.RBRACKET);
       isArray = true;
     }
 
     expectPeek(TokenType.EQ);
     parseExpression();
-    if (!isArray) {
+    if (isArray) {
+      vmWriter.writePop(Segment.TEMP, 0);
+      vmWriter.writePop(Segment.POINTER, 1);
+      vmWriter.writePush(Segment.TEMP, 0);
+      vmWriter.writePop(Segment.THAT, 0);
+    } else {
       vmWriter.writePop(kind2Segment(symbol.kind()), symbol.index());
     }
     expectPeek(TokenType.SEMICOLON);
