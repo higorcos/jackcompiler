@@ -6,9 +6,17 @@ out/
 src/test/resources/input/**/*.xml
 
 .vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
 .classpath
 .project
-.settings
+.settings/
+.factorypath
+nbproject/
+nbbuild/
+nbdist/
 
 target/
 output/
